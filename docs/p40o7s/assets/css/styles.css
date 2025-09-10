@@ -3,11 +3,6 @@ body {
 }
 
 
-
-
-
-
-
 /* --- Popup --- */
 /* Fondo del popup */
 #popupPage {
@@ -514,6 +509,8 @@ model-viewer {
 @media (max-width: 992px) {
   .pos3d #view3d2{
   width: 90%;
+  height: 400px;
+  align-items: center;
 }
 }
 

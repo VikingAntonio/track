@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>POS</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./assets/css/Lightbox-Gallery-baguetteBox.min.css">
+    <link rel="stylesheet" href="./assets/css/styles.css">
+</head>
+
+<body>
+    <script>
+  // Bloquear clic derecho silenciosamente
+  document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+  });
+
+  // Bloquear combinaciones de teclas para inspeccionar
+  document.addEventListener('keydown', function(e) {
+    // F12
+    if (e.key === 'F12') e.preventDefault();
+    // Ctrl + Shift + I / C / J
+    if (e.ctrlKey && e.shiftKey && ['i','c','j'].includes(e.key.toLowerCase())) e.preventDefault();
+    // Ctrl + U (Ver código fuente)
+    if (e.ctrlKey && e.key.toLowerCase() === 'u') e.preventDefault();
+  });
+</script>
+
+
+    <!--<div id="modelo3d"> <model-viewer
+    id="reveal" 
+    loading="eager"
+    poster="./pos.png"
+    src="https://vikingantonio.github.io/bddCards/assets/POS.gltf"  
+    shadow-intensity="5" 
+    camera-controls
+    ar-scale="fixed"
+    alt="element3D"
+    exposure="1"
+    environment-image="neutral"
+    style="height: 500px;"
+>
+</model-viewer>
+<div id="popupPage">
+  <div class="popupContent">
+    <button class="closeBtn">×</button>
+    <iframe id="popupIframe" src="" allowfullscreen></iframe>
+  </div>
+</div>
+
+        <div class="dbanner">
+            <h1>A powerful restaurant POS designed for the guest experience</h1>
+            <p>Quick to learn, easy to use, and designed with restaurant-first features fine-tuned over a decade in the industry.</p><a class="btn" role="button" href="https://menutech.biz/pos/index.html#textform">Get Point of Sale FREE</a>
+        </div>
+    </div>-->
+    <div id="modelo3d"> 
+  <!-- Contenedor View3D -->
+  <div id="view3d">
+    <canvas class="view3d-canvas"></canvas>
+    <div class="v3d-loader">
+      <div class="v3d-loader-progress"></div>
+    </div>
+  </div>
+
+  <div class="dbanner">
+    <h1>A powerful restaurant POS designed for the guest experience</h1>
+    <p>Quick to learn, easy to use, and designed with restaurant-first features fine-tuned over a decade in the industry.</p>
+    <a class="btn" role="button" href="/index.html#textform">Get Point of Sale FREE</a>
+  </div>
+</div>
+
+<script src="https://unpkg.com/@egjs/view3d@latest/dist/view3d.pkgd.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/@egjs/view3d@latest/css/view3d-bundle.min.css">
+
+
+<script>
+const view3D = new View3D("#view3d", { 
+  src: "https://vikingantonio.github.io/bddCards/assets/POS.gltf",
+   poster: "./pos.png",
+  autoInit: true,
+});
+
+// Loader
+view3D.on("loadStart", () => {
+  document.querySelector(".v3d-loader-progress").style.width = "0%";
+});
+view3D.on("progress", e => {
+  document.querySelector(".v3d-loader-progress").style.width = (e.loaded * 100) + "%";
+});
+view3D.on("load", () => {
+  document.querySelector(".v3d-loader").style.display = "none";
+});
+view3D.on("ready", () => {
+  // Escala global del modelo
+  view3D.scene.scale.set(3, 3, 3);
+
+  // Ocultar barra de carga y poster
+  document.querySelector(".v3d-loader").style.display = "none";
+  const poster = document.querySelector(".view3d-poster");
+  if (poster) poster.style.display = "none";
+});
+
+</script>
+<script>
+(function fixView3DPoster(wrapperSelector = "#view3d", padding = 20) {
+  const wrapper = document.querySelector(wrapperSelector);
+  if (!wrapper) return;
+
+  const applyStyles = (el) => {
+    if (!el) return;
+    // Center and keep full image visible
+    el.style.position = "absolute";
+    el.style.top = "50%";
+    el.style.left = "50%";
+    el.style.transform = "translate(-50%, -50%)";
+    el.style.boxSizing = "border-box";
+
+    // FORZAR que no tenga filtro (usa !important para sobreescribir inline/styles de la librería)
+    el.style.setProperty("filter", "none", "important");
+
+    // If it's an <img> (string poster) — use object-fit
+    if (el.tagName && el.tagName.toLowerCase() === "img") {
+      el.style.width = "auto";
+      el.style.height = `calc(100% - ${padding * 2}px)`;
+      el.style.maxWidth = `calc(100% - ${padding * 2}px)`;
+      el.style.maxHeight = `calc(100% - ${padding * 2}px)`;
+      el.style.objectFit = "contain";
+      el.style.margin = "0";
+    } else {
+      // If it's a div with background-image
+      el.style.width = `calc(100% - ${padding * 2}px)`;
+      el.style.height = `calc(100% - ${padding * 2}px)`;
+      el.style.maxWidth = `calc(100% - ${padding * 2}px)`;
+      el.style.maxHeight = `calc(100% - ${padding * 2}px)`;
+      el.style.backgroundSize = "contain";
+      el.style.backgroundRepeat = "no-repeat";
+      el.style.backgroundPosition = "center center";
+    }
+  };
+
+  // Try immediate (if already inserted)
+  const existing = wrapper.querySelector(".view3d-poster");
+  if (existing) applyStyles(existing);
+
+  // Observe for insertion (very reliable)
+  const mo = new MutationObserver(() => {
+    const p = wrapper.querySelector(".view3d-poster");
+    if (p) {
+      applyStyles(p);
+      mo.disconnect();
+    }
+  });
+  mo.observe(wrapper, { childList: true, subtree: true });
+
+  // Safety: re-apply on resize (keeps proportions)
+  window.addEventListener("resize", () => {
+    const p = wrapper.querySelector(".view3d-poster");
+    if (p) applyStyles(p);
+  });
+})();
+</script>
+    <div id="cuadros" class="cuadros">
+        <!-- Start: 1 Row 4 Columns -->
+        <div class="container-sm">
+            <div class="row">
+                <div class="col-6 col-md-3 colun">
+                    <h2>Accessible from anywhere</h2>
+                    <p>Access our cloud-based restaurant POS system from anywhere.</p>
+                </div>
+                <div class="col-6 col-md-3 colun">
+                    <h2>Stay online</h2>
+                    <p>Reliable offline mode ensures you can keep taking payments.</p>
+                </div>
+                <div class="col-6 col-md-3 colun">
+                    <h2>Restaurant grade durability</h2>
+                    <p>Built to take on the rigors of a kitchen.</p>
+                </div>
+                <div class="col-6 col-md-3 colun">
+                    <h2>24/7 support</h2>
+                    <p>Connect with real people who really get restaurant 24/7</p>
+                </div>
+            </div>
+        </div><!-- End: 1 Row 4 Columns -->
+    </div>
+    <div id="columnas" class="columnas">
+        <div class="columna"><img src="https://menutechdeveloper.github.io/bddImg/assets/img/pos1.png"><p><strong>POS Workstation</strong><br />Features a touchscreen display, high-speed processor, and multiple ports for peripheral connectivity.
+Its durable design ensures reliable operation during long shifts, making it ideal for high-traffic environments.</p></div>
+        <div class="columna2"><img src="https://menutechdeveloper.github.io/bddImg/assets/img/pos2.png"><p><strong>Payment Device</strong><br/>
+Its user-friendly interface and compatibility with major cards and contactless methods make it ideal for busy environments.
+Durable and portable, it integrates smoothly with most systems for streamlined service.</p></div>
+        <div class="columna"><img src="https://menutechdeveloper.github.io/bddImg/assets/img/pos3.png"><p><strong>Kitchen Printer</strong><br/>
+Ticket printing is used to provide the customer with a receipt for their order at the time of payment. When the cashier takes the order or receives the payment, the point of sale system automatically generates a ticket with the details: names of the dishes, quantity, prices, total amount, and payment method. The ticket is printed and given to the customer as a receipt..</p></div>
+        <div class="columna2"><img src="https://menutechdeveloper.github.io/bddImg/assets/img/pos4.png"><p><strong>Cash Drawer</strong><br/>
+It helps organize bills and coins in separate compartments.<br/><br/>
+It opens automatically during a transaction and can be locked for added security..</p></div>
+    </div>
+
+
+    <!-- <div class="pos3d"> <model-viewer
+    id="reveal" 
+    loading="eager"
+    poster="./pos.png"
+    src="https://vikingantonio.github.io/bddCards/assets/pos/pos.gltf"  
+    shadow-intensity="5" 
+    camera-controls
+    ar-scale="fixed"
+    alt="element3D"
+    exposure="1"
+    environment-image="neutral"
+    style="height: 500px;"
+>
+  <button class="Hotspot" slot="hotspot-2" data-url="https://lacarretarest.com/" data-position="0.40770454585983007m 0.9672930089115683m 0.04329223379725977m" data-normal="0.015678994483568142m 0.4509506844288455m -0.8924111436692955m" data-visibility-attribute="visible">
+    <span>Customer Display</span>
+  </button>
+
+  <button class="Hotspot" slot="hotspot-3" data-url="https://example.com/page2.html" data-position="0.4197952344028965m 1.0909816645323422m 0.2531016430319083m" data-normal="-0.01611408667222998m 0.398087852078337m 0.9172057556722897m" data-visibility-attribute="visible">
+    <span>POS Workstation</span>
+  </button>
+
+  <button class="Hotspot" slot="hotspot-4" data-url="https://example.com/page3.html" data-position="0.4144973131186613m 0.7980432610523819m 0.33259491428051985m" data-normal="-0.01756649422048951m -5.29739133255446e-7m 0.999845697235589m" data-visibility-attribute="visible">
+    <span>Cash Drawer</span>
+  </button>
+  <button class="Hotspot" slot="hotspot-5" data-url="https://example.com/page3.html" data-position="-0.0018118659789206348m 0.9783368921525447m 0.2278786500073488m" data-normal="-0.017333282584667743m -0.14420561883568098m 0.9893959252043939m" data-visibility-attribute="visible">
+        <span>Printer</span>
+  </button>
+</model-viewer></div>-->
+ <div class="pos3d"> 
+  <!-- Contenedor View3D -->
+  <div id="view3d2">
+    <canvas class="view3d-canvas"></canvas>
+    <div class="v3d-loader">
+      <div class="v3d-loader-progress"></div>
+    </div>
+  </div>
+
+<script src="https://unpkg.com/@egjs/view3d@latest/dist/view3d.pkgd.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/@egjs/view3d@latest/css/view3d-bundle.min.css">
+
+
+<script>
+const view3D2 = new View3D("#view3d2", { 
+  src: "https://vikingantonio.github.io/bddCards/assets/pos/pos.gltf",
+   poster: "./pos.png",
+  autoInit: true,
+});
+
+// Loader para el segundo view
+view3D2.on("loadStart", () => {
+  document.querySelector("#view3d2 .v3d-loader-progress").style.width = "0%";
+});
+view3D2.on("progress", e => {
+  document.querySelector("#view3d2 .v3d-loader-progress").style.width = (e.loaded * 100) + "%";
+});
+view3D2.on("load", () => {
+  document.querySelector("#view3d2 .v3d-loader").style.display = "none";
+});
+view3D2.on("ready", () => {
+  view3D2.scene.scale.set(3, 3, 3);
+  document.querySelector("#view3d2 .v3d-loader").style.display = "none";
+  const poster = document.querySelector("#view3d2 .view3d-poster");
+  if (poster) poster.style.display = "none";
+  // Forzar overflow hidden si quieres quitar la barra
+  document.querySelector("#view3d2").style.overflow = "hidden";
+});
+
+</script>
+<script>
+(function fixView3DPoster(wrapperSelector = "#view3d2", padding = 20) {
+  const wrapper = document.querySelector(wrapperSelector);
+  if (!wrapper) return;
+
+  const applyStyles = (el) => {
+    if (!el) return;
+    // Center and keep full image visible
+    el.style.position = "absolute";
+    el.style.top = "50%";
+    el.style.left = "50%";
+    el.style.transform = "translate(-50%, -50%)";
+    el.style.boxSizing = "border-box";
+
+    // FORZAR que no tenga filtro (usa !important para sobreescribir inline/styles de la librería)
+    el.style.setProperty("filter", "none", "important");
+
+    // If it's an <img> (string poster) — use object-fit
+    if (el.tagName && el.tagName.toLowerCase() === "img") {
+      el.style.width = "auto";
+      el.style.height = `calc(100% - ${padding * 2}px)`;
+      el.style.maxWidth = `calc(100% - ${padding * 2}px)`;
+      el.style.maxHeight = `calc(100% - ${padding * 2}px)`;
+      el.style.objectFit = "contain";
+      el.style.margin = "0";
+    } else {
+      // If it's a div with background-image
+      el.style.width = `calc(100% - ${padding * 2}px)`;
+      el.style.height = `calc(100% - ${padding * 2}px)`;
+      el.style.maxWidth = `calc(100% - ${padding * 2}px)`;
+      el.style.maxHeight = `calc(100% - ${padding * 2}px)`;
+      el.style.backgroundSize = "contain";
+      el.style.backgroundRepeat = "no-repeat";
+      el.style.backgroundPosition = "center center";
+    }
+  };
+
+  // Try immediate (if already inserted)
+  const existing = wrapper.querySelector(".view3d-poster");
+  if (existing) applyStyles(existing);
+
+  // Observe for insertion (very reliable)
+  const mo = new MutationObserver(() => {
+    const p = wrapper.querySelector(".view3d-poster");
+    if (p) {
+      applyStyles(p);
+      mo.disconnect();
+    }
+  });
+  mo.observe(wrapper, { childList: true, subtree: true });
+
+  // Safety: re-apply on resize (keeps proportions)
+  window.addEventListener("resize", () => {
+    const p = wrapper.querySelector(".view3d-poster");
+    if (p) applyStyles(p);
+  });
+})();
+</script>
+    </div>
+    <div id="formulario" class="formulario">
+        <div id="miform">
+            <form data-bss-recipient="0769ed07de9623dd212a615bc33516e5">
+                <!-- Start: Success Example -->
+                <div class="mb-3"><input class="form-control" type="text" id="name-2" name="Name" placeholder="Name" style="background: rgba(255,255,255,0.5);"></div><!-- End: Success Example -->
+                <!-- Start: Success Example -->
+                <div class="mb-3"><input class="form-control" type="text" id="email" name="email" placeholder="Email" style="background: rgba(255,255,255,0.5);"></div><!-- End: Success Example -->
+                <!-- Start: Success Example -->
+                <div class="mb-3"><input class="form-control" type="text" id="phone" name="phone" placeholder="Phone" style="background: rgba(255,255,255,0.5);"></div><!-- End: Success Example -->
+                <!-- Start: Success Example -->
+                <div class="mb-3"><input class="form-control" type="text" id="shirts" name="restaurant" placeholder="restaurant name" style="background: rgba(255,255,255,0.5);"></div><!-- End: Success Example -->
+                <!-- Start: Success Example --><div class="mb-3"><input id="phone-1" class="form-control" type="hidden" name="POS" value="10% off" placeholder="Phome" style="background: rgba(255,255,255,0.5);" /></div><!-- End: Success Example -->
+                <div><button class="btn w-100 d-block" type="submit">Send </button></div>
+            </form>
+        </div>
+        <div id="textform">
+            <h1>Get Your Point of Sale FREE with a 2-Year Premium Subscription!</h1>
+            <p>Don’t miss out — it won’t last forever!</p>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="./assets/js/smart-forms.min.js"></script>
+    <script src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"></script>
+    <script src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js" type="module"></script>
+    <script src="./assets/js/Lightbox-Gallery-baguetteBox.min.js"></script>
+    <script src="./assets/js/Lightbox-Gallery.js"></script>
+    <script src="./assets/js/scroll.js"></script>
+    <script src="./assets/js/untitled.js"></script>
+    <script src="./assets/js/hotspot.js"></script>
+</body>
+
+</html>

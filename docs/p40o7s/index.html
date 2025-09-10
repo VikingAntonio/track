@@ -29,11 +29,11 @@
 </script>
 
 
-    <!--<div id="modelo3d"> <model-viewer
+    <div id="modelo3d"> <model-viewer
     id="reveal" 
     loading="eager"
     poster="./pos.png"
-    src="https://vikingantonio.github.io/bddCards/assets/POS.gltf"  
+    src="https://vikingantonio.github.io/bddCards/assets/pos/pos.gltf"  
     shadow-intensity="5" 
     camera-controls
     ar-scale="fixed"
@@ -42,6 +42,20 @@
     environment-image="neutral"
     style="height: 500px;"
 >
+    <button class="Hotspot" slot="hotspot-2" data-url="https://lacarretarest.com/" data-position="0.40770454585983007m 0.9672930089115683m 0.04329223379725977m" data-normal="0.015678994483568142m 0.4509506844288455m -0.8924111436692955m" data-visibility-attribute="visible">
+    <span>Customer Display</span>
+  </button>
+
+  <button class="Hotspot" slot="hotspot-3" data-url="https://example.com/page2.html" data-position="0.4197952344028965m 1.0909816645323422m 0.2531016430319083m" data-normal="-0.01611408667222998m 0.398087852078337m 0.9172057556722897m" data-visibility-attribute="visible">
+    <span>POS Workstation</span>
+  </button>
+
+  <button class="Hotspot" slot="hotspot-4" data-url="https://example.com/page3.html" data-position="0.4144973131186613m 0.7980432610523819m 0.33259491428051985m" data-normal="-0.01756649422048951m -5.29739133255446e-7m 0.999845697235589m" data-visibility-attribute="visible">
+    <span>Cash Drawer</span>
+  </button>
+  <button class="Hotspot" slot="hotspot-5" data-url="https://example.com/page3.html" data-position="-0.0018118659789206348m 0.9783368921525447m 0.2278786500073488m" data-normal="-0.017333282584667743m -0.14420561883568098m 0.9893959252043939m" data-visibility-attribute="visible">
+        <span>Printer</span>
+  </button>
 </model-viewer>
 <div id="popupPage">
   <div class="popupContent">
@@ -54,9 +68,9 @@
             <h1>A powerful restaurant POS designed for the guest experience</h1>
             <p>Quick to learn, easy to use, and designed with restaurant-first features fine-tuned over a decade in the industry.</p><a class="btn" role="button" href="https://menutech.biz/pos/index.html#textform">Get Point of Sale FREE</a>
         </div>
-    </div>-->
-    <div id="modelo3d"> 
-  <!-- Contenedor View3D -->
+    </div>
+    <!--<div id="modelo3d"> 
+  Contenedor View3D
   <div id="view3d">
     <canvas class="view3d-canvas"></canvas>
     <div class="v3d-loader">
@@ -160,7 +174,7 @@ view3D.on("ready", () => {
     if (p) applyStyles(p);
   });
 })();
-</script>
+</script>-->
     <div id="cuadros" class="cuadros">
         <!-- Start: 1 Row 4 Columns -->
         <div class="container-sm">

@@ -77,7 +77,7 @@
 
 <script>
 const view3D = new View3D("#view3d", { 
-  src: "https://vikingantonio.github.io/bddCards/assets/pos2.gltf",
+  src: "https://vikingantonio.github.io/bddCards/assets/pos/pos.gltf",
    poster: "./pos.png",
   autoInit: true,
 });
@@ -225,9 +225,9 @@ It opens automatically during a transaction and can be locked for added security
   <button class="Hotspot" slot="hotspot-5" data-url="https://example.com/page3.html" data-position="-0.0018118659789206348m 0.9783368921525447m 0.2278786500073488m" data-normal="-0.017333282584667743m -0.14420561883568098m 0.9893959252043939m" data-visibility-attribute="visible">
         <span>Printer</span>
   </button>
-</model-viewer></div>-->
- <div class="pos3d"> 
-  <!-- Contenedor View3D -->
+</model-viewer></div>
+ <!--<div class="pos3d"> 
+  <!-- Contenedor View3D
   <div id="view3d2">
     <canvas class="view3d-canvas"></canvas>
     <div class="v3d-loader">
@@ -280,10 +280,8 @@ view3D2.on("ready", () => {
     el.style.transform = "translate(-50%, -50%)";
     el.style.boxSizing = "border-box";
 
-    // FORZAR que no tenga filtro (usa !important para sobreescribir inline/styles de la librería)
     el.style.setProperty("filter", "none", "important");
 
-    // If it's an <img> (string poster) — use object-fit
     if (el.tagName && el.tagName.toLowerCase() === "img") {
       el.style.width = "auto";
       el.style.height = `calc(100% - ${padding * 2}px)`;
@@ -292,7 +290,6 @@ view3D2.on("ready", () => {
       el.style.objectFit = "contain";
       el.style.margin = "0";
     } else {
-      // If it's a div with background-image
       el.style.width = `calc(100% - ${padding * 2}px)`;
       el.style.height = `calc(100% - ${padding * 2}px)`;
       el.style.maxWidth = `calc(100% - ${padding * 2}px)`;
@@ -303,11 +300,9 @@ view3D2.on("ready", () => {
     }
   };
 
-  // Try immediate (if already inserted)
   const existing = wrapper.querySelector(".view3d-poster");
   if (existing) applyStyles(existing);
 
-  // Observe for insertion (very reliable)
   const mo = new MutationObserver(() => {
     const p = wrapper.querySelector(".view3d-poster");
     if (p) {
@@ -317,14 +312,13 @@ view3D2.on("ready", () => {
   });
   mo.observe(wrapper, { childList: true, subtree: true });
 
-  // Safety: re-apply on resize (keeps proportions)
   window.addEventListener("resize", () => {
     const p = wrapper.querySelector(".view3d-poster");
     if (p) applyStyles(p);
   });
 })();
 </script>
-    </div>
+    </div>-->
     <div id="formulario" class="formulario">
         <div id="miform">
             <form data-bss-recipient="0769ed07de9623dd212a615bc33516e5">

@@ -1,7 +1,66 @@
 body {
   overflow-x: hidden;
 }
+/* Hotspot circular inicial */
+.Hotspot {
+  background-color: rgba(255,87,34,0.9);
+  border: none;
+  border-radius: 50%;       /* círculo */
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
 
+/* Hover: crece ligeramente */
+.Hotspot:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 12px rgba(255,87,34,0.7);
+}
+
+/* Texto oculto inicialmente */
+.Hotspot span {
+  position: absolute;
+  top: 50%;
+  left: 110%; /* aparece a la derecha del círculo */
+  transform: translateY(-50%);
+  background-color: rgba(255,87,34,0.9);
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, left 0.2s;
+  font-size: 14px;
+}
+
+/* Mostrar texto al hover */
+.Hotspot:hover span {
+  opacity: 1;
+  left: 50px; /* se desplaza ligeramente hacia afuera del círculo */
+}
+
+/* Responsive para móviles: mostrar siempre el texto debajo */
+@media (max-width: 768px) {
+  /* Reducir el tamaño del hotspot para móviles */
+  .Hotspot {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;  /* círculo */
+    padding: 0;           /* eliminamos padding para que solo sea el punto */
+  
+  }
+
+  /* Ocultar el texto en móviles */
+  .Hotspot span {
+    display: none;
+  }
+}
 
 /* --- Popup --- */
 /* Fondo del popup */

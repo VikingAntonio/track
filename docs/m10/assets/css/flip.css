@@ -25,13 +25,7 @@
   height: 700px;
 }
 
-/* ===== Pantallas Ultra Grandes (2560px o más) ===== */
-@media (min-width: 2560px) {
-  .flipbook-viewport .flipbook {
-    width: 1400px;
-    height: 1050px;
-  }
-}
+
 
 /* ===== Pantallas Grandes (1921px a 2559px) ===== */
 @media (max-width: 2559px) and (min-width: 1921px) {

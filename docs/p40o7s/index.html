@@ -333,6 +333,25 @@ view3D2.on("ready", () => {
 })();
 </script>
     </div>-->
+      <div class="popup-container">
+    <button class="popup-btn" onclick="openPopup()">Abrir Popup</button>
+  </div>
+
+  <div class="popup-overlay" id="popup">
+    <div class="popup-box">
+      <span class="popup-close" onclick="closePopup()">✖</span>
+      <iframe src="https://example.com"></iframe>
+    </div>
+  </div>
+
+  <script>
+    function openPopup() {
+      document.getElementById("popup").style.display = "flex";
+    }
+    function closePopup() {
+      document.getElementById("popup").style.display = "none";
+    }
+  </script>
     <div id="formulario" class="formulario">
         <div id="miform">
             <form data-bss-recipient="0769ed07de9623dd212a615bc33516e5">

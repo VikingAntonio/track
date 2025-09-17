@@ -1,0 +1,100 @@
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Fondo y tipografía simple */
+.misproductos {
+  font-family: Arial, sans-serif;
+  background: #f8f9fa;
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+}
+
+/* Contenedor principal */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Siempre 3 columnas */
+  gap: 6px; /* Espacio entre imágenes */
+  width: 100%;
+  max-width: 1000px; /* Para que no se expanda demasiado en pantallas grandes */
+}
+
+/* Cada item */
+.gallery-item {
+  aspect-ratio: 1 / 1; /* Mantener cuadrados */
+  overflow: hidden;
+  border-radius: 6px;
+  background: #ddd;
+}
+
+/* Las imágenes */
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ajustar sin deformar */
+  display: block;
+  border-radius: 6px;
+}
+
+/* Margen en móviles */
+@media (max-width: 768px) {
+  body {
+    padding: 2px; /* margen mínimo en móvil */
+  }
+}
+
+
+/* Agregar en tu style.css */
+
+/* Hero Section */
+.hero {
+  text-align: center;
+  margin-bottom: 40px; /* Espacio para separar del grid */
+  padding: 20px;
+}
+
+.hero-title {
+  font-size: 4rem;
+  color: #ff6a00; /* Naranja */
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', sans-serif;
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
+  margin-bottom: 10px;
+}
+
+.hero-subtitle {
+  font-size: 1.3rem;
+  color: #333;
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.8rem;
+  }
+  .hero-subtitle {
+    font-size: 1rem;
+    padding: 0 10px;
+  }
+}
+
+
+.hero img{
+    width: 300px;
+}
+
+/* Animación hover en las imágenes del grid */
+.gallery-item img {
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.gallery-item:hover img {
+  transform: scale(1.08);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}

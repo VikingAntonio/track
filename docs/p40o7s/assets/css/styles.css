@@ -50,10 +50,10 @@ body {
 @media (max-width: 768px) {
   /* Reducir el tamaño del hotspot para móviles */
   .Hotspot {
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;  /* círculo */
-    padding: 0;           /* eliminamos padding para que solo sea el punto */
+    width: 25px;
+    height: 25px;
+    border-radius: 50%; 
+    padding: 0;
   
   }
 

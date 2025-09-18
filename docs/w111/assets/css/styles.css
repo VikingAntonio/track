@@ -43,6 +43,9 @@ model-viewer {
     flex-direction: column;
     height: 600px;
   }
+  #view3d {
+    height: 400px; /* fuerza el canvas más bajo en móvil */
+  }
 }
 
 .dbanner {

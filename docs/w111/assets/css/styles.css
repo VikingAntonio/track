@@ -41,6 +41,7 @@ model-viewer {
 @media (max-width: 992px) {
   #modelo3d {
     flex-direction: column;
+    height: 600px;
   }
 }
 

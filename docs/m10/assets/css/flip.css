@@ -1,3 +1,6 @@
+* {
+  box-sizing: border-box;
+}
 .flipbook-viewport {
   display:flex;
   justify-content:center;

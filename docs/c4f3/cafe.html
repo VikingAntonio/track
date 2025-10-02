@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Café Premium — Secciones Comerciales Interactivas</title>
+
+  <!-- Fuentes & iconos -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="./assets/css/cafe.css" />
+</head>
+<body>
+
+  <!-- HERO -->
+  <header id="hero">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <h1>Nuestro Café Premium — 100% en grano</h1>
+        <p>Un grano seleccionado, un tueste que despierta notas intensas. Diseñado para quien busca una taza memorable.</p>
+        <div class="hero-cta">
+          <button class="btn" id="btn-conoce">Conócelo</button>
+          <button class="btn-ghost" id="btn-puntos">Puntos de venta</button>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+         <!--card3D-->
+   <div class="wrapper">
+  <div class="card">
+    <img src="./assets/img/cafe22.png" alt="Imagen PNG">
+  </div>
+</div>
+    <!--END card3D-->
+        <div class="hero-glow" id="heroGlow"></div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- FEATURES -->
+    <section id="features" class="wrap">
+      <h2 style="text-align:center;margin-bottom:16px;font-family:'Playfair Display',serif">Lo que hace único a este grano</h2>
+      <p style="text-align:center;color:var(--muted);margin-bottom:26px">Aroma intenso, sabor equilibrado y notas naturales que conquistan desde el primer sorbo. Granos cuidadosamente seleccionados para ofrecer una experiencia auténtica y de alta calidad que transforma cada taza en un momento especial.</p>
+
+      <div class="features-grid" id="featuresGrid">
+        <div class="feature-card" data-title="Aroma intenso" data-desc="Aromas concentrados que destacan desde la primera molienda. Ideal para preparar espresso y métodos concentrados.">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none"><path d="M8 3a1 1 0 0 0-1 1v2" stroke="#6b3f2f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <h3>Aroma intenso</h3>
+          <p>Fragancia que se mantiene desde la bolsa hasta la taza.</p>
+          <div class="feature-cta"><button class="btn-ghost small">Más</button></div>
+        </div>
+
+        <div class="feature-card" data-title="Tostado artesanal" data-desc="Lotes pequeños con control exacto de desarrollo térmico para un perfil equilibrado y repetible.">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none"><path d="M12 2v6" stroke="#6b3f2f" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <h3>Tostado artesanal</h3>
+          <p>Tueste en lotes pequeños para consistencia y sabor.</p>
+          <div class="feature-cta"><button class="btn-ghost small">Más</button></div>
+        </div>
+
+        <div class="feature-card" data-title="Selección manual" data-desc="Solo los granos que cumplen el estándar pasan a tu empaque. Calidad por encima de todo.">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none"><path d="M6 12h12" stroke="#6b3f2f" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <h3>Selección manual</h3>
+          <p>Control de calidad en cada paso del proceso.</p>
+          <div class="feature-cta"><button class="btn-ghost small">Más</button></div>
+        </div>
+
+        <div class="feature-card" data-title="Garantía de calidad" data-desc="Cada lote viene con información del origen, fecha de tueste y recomendaciones de preparación.">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none"><path d="M12 2l3 7h7l-5 4 2 8-7-4-7 4 2-8-5-4h7z" stroke="#6b3f2f" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <h3>Garantía de calidad</h3>
+          <p>Transparencia total en cada bolsa que vendemos.</p>
+          <div class="feature-cta"><button class="btn-ghost small">Más</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section id="testimonials" class="wrap">
+      <h2 style="text-align:center;font-family:'Playfair Display',serif">Lo que dicen nuestros clientes</h2>
+      <p style="text-align:center;color:var(--muted);margin-bottom:26px">Nuestros clientes disfrutan del auténtico sabor del café en grano de Veracruz. Cada testimonio refleja su experiencia con el aroma, la frescura y la calidad de nuestros granos, cultivados con dedicación y pasión.</p>
+
+      <div class="testi-wrap">
+        <div class="swiper mySwiper" style="width:100%;max-width:920px;padding:18px 0">
+          <div class="swiper-wrapper">
+            <div class="swiper-slide">
+              <div class="quote">“Una primera taza inolvidable — notas a chocolate y cuerpo redondo. Compré 2 bolsas y volveré por más.”</div>
+              <div class="author">— Ana G., Ciudad de México</div>
+            </div>
+            <div class="swiper-slide">
+              <div class="quote">“Frescura y aroma desde la primera molienda. Se nota que hay control y cariño en cada lote.”</div>
+              <div class="author">— Pedro R., Guadalajara</div>
+            </div>
+            <div class="swiper-slide">
+              <div class="quote">“Ideal para mi máquina doméstica: consistencia y crema en cada extracción.”</div>
+              <div class="author">— Laura M., Monterrey</div>
+            </div>
+          </div>
+          <!-- pagination -->
+          <div class="swiper-pagination" style="margin-top:16px"></div>
+        </div>
+      </div>
+    </section>
+
+    <div id="taza3d" class="columna2">
+        <h1><strong>Take a Break</strong><br/>
+        Have The Best Coffee</h1>
+    <model-viewer
+    id="reveal" 
+    loading="eager"
+    poster="https://vikingantonio.github.io/aetherkairo/assets/img/caffe22.png"
+    src="https://vikingantonio.github.io/aetherkairo/assets/scene.gltf"  
+    shadow-intensity="2" 
+    camera-controls
+    camera-orbit="360deg -360deg 1.5m"
+    auto-rotate
+    alt="element3D"
+    exposure="1"
+    environment-image="neutral"
+    style="height: 500px;"
+>
+</model-viewer>
+    </div>
+      <!-- SENSORY EXPERIENCE -->
+   <section id="sensory">
+  <div id="particles-sensory"></div>
+  <div id="keywords"></div>
+</section>
+
+    <!-- CONTACT / PUNTOS DE VENTA (placeholder) -->
+    <section id="contacto" class="wrap">
+      <div class="contact-card">
+        <h3 style="margin:0 0 8px;font-family:'Playfair Display',serif">¿Listo para conseguirlo?</h3>
+        <p style="margin:0 0 10px;color:var(--muted)">Atención personalizada a través de una llamada, con resolución inmediata de dudas y asesoría sobre nuestros cafés en grano de Veracruz, garantizando frescura, calidad y la mejor experiencia en cada taza.</p>
+        <button class="btn" id="btn-contact">Habla con un Experto en Café</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- small right-bottom card for keyword details -->
+  <div class="kw-card" id="kwCard" role="dialog" aria-hidden="true">
+    <h4 id="kwTitle">Intensidad</h4>
+    <p id="kwText">Descripción breve de la palabra sensorial y cómo se traduce en la taza. (Reemplaza con tu copy)</p>
+  </div>
+
+  <!-- modal simple (re-usable) -->
+  <div id="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;z-index:1500">
+    <div style="background:#fff;padding:20px;border-radius:12px;max-width:520px;width:90%">
+      <h3 id="modalTitle">Detalle</h3>
+      <p id="modalBody">Texto</p>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px"><button id="modalClose" class="btn-ghost">Cerrar</button></div>
+    </div>
+  </div>
+
+  <!-- LIBRARIES -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/vanilla-tilt@1.7.2/dist/vanilla-tilt.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.9.3/tsparticles.bundle.min.js"></script>
+  <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+  <script src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js" type="module"></script>
+  <script src="./assets/js/card3d.js"></script>
+
+  <script>
+    /* ============ Helpers ============ */
+    gsap.registerPlugin(ScrollTrigger);
+
+    /* ============ HERO Parallax + intro ============ */
+    (function(){
+      const heroImg = document.getElementById('heroImg');
+      const glow = document.getElementById('heroGlow');
+
+      // initial small tilt by mouse (subtle parallax)
+      document.getElementById('hero').addEventListener('mousemove', e=>{
+        const rect = e.currentTarget.getBoundingClientRect();
+        const rx = (e.clientX - rect.left) / rect.width - 0.5;
+        const ry = (e.clientY - rect.top) / rect.height - 0.5;
+        gsap.to(heroImg, {x: rx * 18, y: ry * 8, rotationY: rx * 4, rotationX: -ry * 4, duration:0.6, ease:'power3.out'});
+        gsap.to(glow, {x: rx * -20, y: ry * -12, duration:0.6, ease:'power3.out'});
+      });
+      document.getElementById('hero').addEventListener('mouseleave', ()=> {
+        gsap.to(heroImg, {x:0,y:0,rotationX:0,rotationY:0,duration:0.9,ease:'power3.out'});
+        gsap.to(glow, {x:0,y:0,duration:0.8,ease:'power3.out'});
+      });
+
+      // scroll zoom (parallax like)
+      gsap.to(heroImg, {scale:1.08, y:-60, ease:'none', scrollTrigger:{trigger:'#hero', start:'top top', end:'bottom top', scrub:1}});
+      gsap.from('.hero-copy h1', {y:24, opacity:0, duration:0.8, delay:0.1, scrollTrigger:{trigger:'#hero', start:'top 90%'}});
+
+      // CTA anchors
+      document.getElementById('btn-conoce').addEventListener('click', ()=> {
+        document.getElementById('features').scrollIntoView({behavior:'smooth'});
+      });
+      document.getElementById('btn-puntos').addEventListener('click', ()=> {
+        document.getElementById('contacto').scrollIntoView({behavior:'smooth'});
+      });
+    })();
+
+    /* ============ FEATURES: tilt + reveal modal ============ */
+    (function(){
+      const cards = document.querySelectorAll('.feature-card');
+      // init tilt
+      VanillaTilt.init(cards, {max:14,speed:450,glare:true,"max-glare":0.08,scale:1.03});
+
+      // entrance animation
+      gsap.from(cards, {y:30, opacity:0, stagger:0.08, duration:0.8, ease:'power3.out', scrollTrigger:{trigger:'#features', start:'top 80%'}});
+
+      // click -> modal with details
+      const modal = document.getElementById('modal');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalBody = document.getElementById('modalBody');
+      const modalClose = document.getElementById('modalClose');
+
+      cards.forEach(card=>{
+        card.addEventListener('click', ()=> {
+          modalTitle.textContent = card.dataset.title || 'Detalle';
+          modalBody.textContent = card.dataset.desc || card.querySelector('p').textContent;
+          modal.style.display = 'flex';
+        });
+      });
+      modalClose.addEventListener('click', ()=> modal.style.display = 'none');
+    })();
+
+    /* ============ TESTIMONIALS: Swiper ============ */
+    (function(){
+      const swiper = new Swiper('.mySwiper', {
+        loop:true,
+        autoplay:{delay:4200, disableOnInteraction:false},
+        slidesPerView:1,
+        spaceBetween:22,
+        pagination:{el:'.swiper-pagination', clickable:true},
+        breakpoints:{
+          700:{slidesPerView:2},
+          1000:{slidesPerView:3}
+        }
+      });
+      // subtle animation on slide change
+      swiper.on('slideChangeTransitionStart', ()=> {
+        gsap.from('.swiper-slide-active .quote', {y:8, opacity:0, duration:.45});
+      });
+    })();
+
+    /* ============ SENSORY: particles + keywords ============ */
+    (async function(){
+      // tsParticles simple subtle config: warm small particles
+      await tsParticles.load('particles-sensory', {
+        fpsLimit: 60,
+        background: { color: { value: 'transparent' } },
+        interactivity: { events: { onHover: { enable: false, mode: 'repulse' }, onClick: { enable: false } } },
+        particles: {
+          number: { value: 38, density: { enable: true, area: 800 } },
+          color: { value: ['#e9d7c1','#caa77a','#d9c7b0'] },
+          shape: { type: 'circle' },
+          opacity: { value: 0.55, random: { enable: true, minimumValue: 0.25 } },
+          size: { value: { min: 2, max: 8 } },
+          move: { enable: true, speed: 0.7, direction: 'none', outModes: 'out' }
+        }
+      });
+
+      const keywords = [
+        {text:'Intensidad', desc:'Cuerpo pronunciado y persistente en la taza.'},
+        {text:'Aroma', desc:'Notas que se perciben al moler y al infusionar.'},
+        {text:'Equilibrio', desc:'Acidez y dulzor en balance.'},
+        {text:'Chocolate', desc:'Notas achocolatadas en retrogusto.'},
+        {text:'Caramelo', desc:'Dulzor suave y redondo.'},
+        {text:'Cítrico', desc:'Destellos sutiles que aportan vivacidad.'}
+      ];
+
+      const container = document.getElementById('keywords');
+
+      // place keywords in a visually pleasing, randomized ring
+      function placeKeywords(){
+        container.innerHTML = '';
+        const w = container.clientWidth, h = container.clientHeight;
+        const cx = w/2, cy = h/2;
+        const rX = Math.min(cx,cy) * 0.9;
+        keywords.forEach((k,i)=>{
+          const angle = (i / keywords.length) * Math.PI*2 + (Math.random()*0.4 - 0.2);
+          const x = cx + Math.cos(angle) * (rX * (0.45 + Math.random()*0.5));
+          const y = cy + Math.sin(angle) * (rX * (0.35 + Math.random()*0.5));
+          const el = document.createElement('div');
+          el.className = 'kw';
+          el.textContent = k.text;
+          el.style.left = (x - 40) + 'px';
+          el.style.top = (y - 14) + 'px';
+          el.dataset.desc = k.desc;
+          container.appendChild(el);
+        });
+      }
+      placeKeywords();
+      window.addEventListener('resize', placeKeywords);
+
+      // small parallax on mousemove
+      container.addEventListener('mousemove', e=>{
+        const rect = container.getBoundingClientRect();
+        const rx = (e.clientX - rect.left)/rect.width - 0.5;
+        const ry = (e.clientY - rect.top)/rect.height - 0.5;
+        document.querySelectorAll('.kw').forEach((el,idx)=>{
+          const depth = (idx % 3) * 6 + 6;
+          gsap.to(el, {x: rx * depth, y: ry * depth, duration:0.8, ease:'power3.out'});
+        });
+      });
+
+      // click keyword => show right-bottom card
+      const kwCard = document.getElementById('kwCard');
+      const kwTitle = document.getElementById('kwTitle');
+      const kwText = document.getElementById('kwText');
+
+      container.addEventListener('click', e=>{
+        const t = e.target.closest('.kw');
+        if(!t) return;
+        kwTitle.textContent = t.textContent;
+        kwText.textContent = t.dataset.desc || 'Descripción';
+        kwCard.style.display = 'block';
+        kwCard.setAttribute('aria-hidden','false');
+        // auto hide after 6s
+        clearTimeout(kwCard.hideTimeout);
+        kwCard.hideTimeout = setTimeout(()=>{ kwCard.style.display='none'; kwCard.setAttribute('aria-hidden','true'); }, 6000);
+      });
+    })();
+
+    /* ============ small accessibility & close handlers ============ */
+    (function(){
+      document.getElementById('modal').addEventListener('click', (e)=>{
+        if(e.target === e.currentTarget) e.currentTarget.style.display = 'none';
+      });
+    })();
+
+  </script>
+</body>
+</html>

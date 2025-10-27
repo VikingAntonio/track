@@ -1,0 +1,1676 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Menutech Framework</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #f7f7f7;
+      margin: 0;
+      padding: 2em;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 1.5em;
+    }
+
+    .search {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 2em;
+    }
+
+    .search input {
+      width: 300px;
+      padding: 10px 15px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      outline: none;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 1.5em;
+    }
+
+    .component-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5em;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 0.8em;
+      transition: transform 0.2s ease;
+    }
+
+    .component-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .tag {
+      font-weight: bold;
+      color: #444;
+      font-family: monospace;
+      font-size: 0.9em;
+    }
+
+    .preview, .props {
+      height: 180px;
+      overflow: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      padding: 5px;
+      border-radius: 10px;
+    }
+
+    .preview {
+      border: 2px dashed #ddd;
+      text-align: center;
+      background: #fafafa;
+      position: relative;
+    }
+
+    .preview::-webkit-scrollbar,
+    .props::-webkit-scrollbar {
+      display: none;
+    }
+
+    .props label {
+      font-weight: 600;
+      display: block;
+      margin-top: 10px;
+    }
+
+    .props input, .props select {
+      padding: 5px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      width: 100%;
+      margin-top: 5px;
+      box-sizing: border-box;
+    }
+
+    .copy-btn {
+      align-self: flex-end;
+      padding: 6px 10px;
+      font-size: 14px;
+      border: none;
+      border-radius: 6px;
+      background: #00bcd4;
+      color: white;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-top: 8px;
+    }
+
+    .copy-btn:hover {
+      background: #0097a7;
+    }
+
+    small {
+      color: #777;
+    }
+
+    .image-inputs input {
+      margin-bottom: 6px;
+    }
+
+    .add-image-btn {
+      margin-top: 8px;
+      padding: 6px 8px;
+      font-size: 13px;
+      border: none;
+      border-radius: 6px;
+      background: #e0e0e0;
+      cursor: pointer;
+    }
+
+    .add-image-btn:hover {
+      background: #ccc;
+    }
+
+#editorControls {
+  font-family: 'Inter', 'Poppins', 'Segoe UI', sans-serif;
+  background: #fafafa;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* === Labels === */
+#editorControls label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #333;
+  margin-bottom: 6px;
+  margin-top: 10px;
+}
+
+/* === Inputs, Textareas y Selects === */
+#editorControls input[type="text"],
+#editorControls input[type="color"],
+#editorControls textarea,
+#editorControls select {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #fff;
+  color: #222;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+  margin-bottom: 10px;
+}
+
+/* === Efectos === */
+#editorControls input:focus,
+#editorControls textarea:focus,
+#editorControls select:focus {
+  border-color: #00bcd4;
+  box-shadow: 0 0 0 3px rgba(0,188,212,0.2);
+  outline: none;
+}
+
+/* === Textarea === */
+#editorControls textarea {
+  min-height: 80px;
+  resize: vertical;
+  font-family: 'Fira Code', monospace;
+}
+
+/* === Botones de pestañas === */
+.tab-btn {
+  padding: 8px 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  color: #333;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  background: #00bcd4;
+  color: #fff;
+  border-color: #00bcd4;
+}
+
+.tab-btn.active {
+  background: #00bcd4;
+  color: #fff;
+  border-color: #00bcd4;
+}
+
+
+#editorControls button:not(.tab-btn) {
+  background: #00bcd4;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#editorControls button:not(.tab-btn):hover {
+  background: #0097a7;
+}
+
+
+#editorControls::-webkit-scrollbar {
+  width: 6px;
+}
+#editorControls::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 6px;
+}
+#editorControls::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+#editorControls input[type="color"] {
+  padding: 0;
+  height: 40px;
+  cursor: pointer;
+}
+
+#editorControls input::placeholder,
+#editorControls textarea::placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+
+h2 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  color: #222;
+  letter-spacing: 0.5px;
+}
+
+
+@media (max-width: 900px) {
+  #editorControls {
+    max-width: 100%;
+  }
+
+  #templateContainer {
+    max-width: 100%;
+    margin-top: 1em;
+  }
+
+  div[style*="display:flex"] {
+    flex-direction: column;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <h1>Framework Menutech</h1>
+
+  <div class="search">
+    <input type="text" id="searchInput" placeholder="Buscar componente... (ej. particles)">
+  </div>
+
+  <div class="grid" id="componentGrid">
+
+    <!-- MENUTECH FORM -->
+    <div class="component-card" data-name="menutech-form" data-type="ui">
+      <div class="tag">&lt;menutech-form&gt;</div>
+      <div class="preview">
+        <menutech-form bg-color="#fff" label-color="#000" input-color="#000"
+          placeholder-color="#555" button-color="#ff6600"
+          button-text-color="#fff" max-width="400px"></menutech-form>
+      </div>
+      <div class="props">
+        <label>Color de fondo</label>
+        <input type="color" data-attr="bg-color" value="#fff">
+        <label>Color de etiqueta</label>
+        <input type="color" data-attr="label-color" value="#000">
+        <label>Color de input</label>
+        <input type="color" data-attr="input-color" value="#000">
+        <label>Color placeholder</label>
+        <input type="color" data-attr="placeholder-color" value="#555">
+        <label>Color botón</label>
+        <input type="color" data-attr="button-color" value="#ff6600">
+        <label>Color texto botón</label>
+        <input type="color" data-attr="button-text-color" value="#fff">
+        <label>Ancho máximo</label>
+        <input type="text" data-attr="max-width" value="400px">
+      </div>
+      <button class="copy-btn">Copiar código</button>
+      <small>Formulario editable con colores y ancho configurables.</small>
+    </div>
+    <!--=================================================================================================================================-->
+    <!--MENUTECH EVENTS-->
+    <!--=================================================================================================================================-->
+    <div class="component-card" data-name="menutech-navidad" data-type="visual">
+  <div class="tag">&lt;menutech-navidad&gt;</div>
+
+  <div class="preview" style="height:200px; background:#001b33; border-radius:8px; overflow:hidden;">
+    <menutech-navidad></menutech-navidad>
+  </div>
+
+  <div class="props" style="max-height:320px; overflow:auto;">
+    <!-- POPUP -->
+    Mostrar Popup
+    <label class="switch">
+  <input type="checkbox" data-attr="popup-activo">
+  <span class="slider"></span>
+</label>
+
+    <div class="popup-fields" style="display:none;">
+      <label>Imagen Promocional (URL):</label>
+      <input type="url" placeholder="https://ejemplo.com/imagen.png" data-attr="popup-image">
+
+      <label>Enlace del botón:</label>
+      <input type="url" placeholder="https://ejemplo.com" data-attr="popup-link">
+
+      <label>Color del botón:</label>
+      <input type="color" data-attr="popup-color" value="#d32f2f">
+    </div>
+
+    <hr>
+
+    <!-- DURACIÓN -->
+    <label>Inicio de promoción:</label>
+    <input type="date" data-attr="fecha-inicio" value="2025-12-25">
+    <label>Fin de promoción:</label>
+    <input type="date" data-attr="fecha-fin" value="2025-12-25">
+
+    <hr>
+
+    <!-- PARTÍCULAS -->
+    <label>Color de copos:</label>
+    <input type="color" data-attr="color" value="#ffffff">
+
+    <label>Cantidad:</label>
+    <input type="range" min="10" max="150" value="60" data-attr="cantidad">
+
+    <label>Tamaño:</label>
+    <input type="range" min="1" max="10" step="0.5" value="3" data-attr="tamano">
+
+    <label>Velocidad:</label>
+    <input type="range" min="0.5" max="3" step="0.1" value="1" data-attr="velocidad">
+
+    <label>Opacidad:</label>
+    <input type="range" min="0.1" max="1" step="0.1" value="0.8" data-attr="opacidad">
+  </div>
+
+  <button class="copy-btn">Copiar código</button>
+  <small>Animación de nieve navideña con popup opcional y rango de días configurables.</small>
+</div>
+
+<style>
+.switch {
+  position:relative;
+  display:inline-block;
+  width:50px;
+  height:26px;
+  margin:6px 0;
+}
+.switch input {display:none;}
+.slider {
+  position:absolute;
+  cursor:pointer;
+  top:0; left:0; right:0; bottom:0;
+  background-color:#ccc;
+  transition:.4s;
+  border-radius:26px;
+}
+.slider:before {
+  position:absolute;
+  content:"";
+  height:20px; width:20px;
+  left:3px; bottom:3px;
+  background-color:white;
+  transition:.4s;
+  border-radius:50%;
+}
+input:checked + .slider {
+  background-color:#00bcd4;
+}
+input:checked + .slider:before {
+  transform:translateX(24px);
+}
+</style>
+
+<script>
+const card = document.querySelector('[data-name="menutech-navidad"]');
+const preview = card.querySelector("menutech-navidad");
+const popupFields = card.querySelector(".popup-fields");
+
+// Actualización en tiempo real
+card.querySelectorAll("[data-attr]").forEach(input => {
+  input.addEventListener("input", e => {
+    const attr = e.target.dataset.attr;
+    if (e.target.type === "file" && e.target.files[0]) {
+      const url = URL.createObjectURL(e.target.files[0]);
+      preview.setAttribute(attr, url);
+    } else if (e.target.type === "checkbox") {
+      preview.setAttribute(attr, e.target.checked ? "true" : "false");
+      popupFields.style.display = e.target.checked ? "block" : "none";
+    } else {
+      preview.setAttribute(attr, e.target.value);
+    }
+  });
+});
+
+// ======= COMPONENTE FUNCIONAL =======
+class MenutechNavidad extends HTMLElement {
+  static get observedAttributes() {
+    return [
+      "color","cantidad","tamano","velocidad","opacidad",
+      "popup-activo","popup-image","popup-link","popup-color",
+      "fecha-inicio","fecha-fin"
+    ];
+  }
+
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+    this.render();
+  }
+
+  attributeChangedCallback() {
+    this.render();
+  }
+
+  render() {
+    const color = this.getAttribute("color") || "#ffffff";
+    const cantidad = parseInt(this.getAttribute("cantidad")) || 60;
+    const tamano = parseFloat(this.getAttribute("tamano")) || 3;
+    const velocidad = parseFloat(this.getAttribute("velocidad")) || 1;
+    const opacidad = parseFloat(this.getAttribute("opacidad")) || 0.8;
+    const popupActivo = this.getAttribute("popup-activo") === "true";
+    const popupImage = this.getAttribute("popup-image") || "";
+    const popupLink = this.getAttribute("popup-link") || "";
+    const popupColor = this.getAttribute("popup-color") || "#d32f2f";
+    const fechaInicio = this.getAttribute("fecha-inicio") || "2025-12-25";
+    const fechaFin = this.getAttribute("fecha-fin") || "2025-12-25";
+
+    const hoy = new Date();
+const enEditor = this.closest('.preview') !== null;
+
+// Fechas configuradas
+const inicio = new Date(fechaInicio);
+const fin = new Date(fechaFin);
+
+// Fecha de navidad por defecto (25 diciembre)
+const navidad = new Date(hoy.getFullYear(), 11, 25); // mes 11 = diciembre
+
+// Si las fechas son iguales al valor por defecto, se toma navidad como única fecha
+const fechasPorDefecto =
+  fechaInicio === "2025-12-25" && fechaFin === "2025-12-25";
+
+// Activo si:
+// - Está en modo editor
+// - O si es navidad (por defecto)
+// - O si hoy está entre el rango configurado
+let activo = false;
+if (enEditor) {
+  activo = true;
+} else if (fechasPorDefecto) {
+  activo = hoy.toDateString() === navidad.toDateString();
+} else {
+  activo = hoy >= inicio && hoy <= fin;
+}
+
+
+    // Copos de nieve SOLO en vista previa
+    let dots = "";
+    if (activo && enEditor) {
+      const snowImages = [
+        "https://menutechdeveloper.github.io/libreria/snow1.png",
+        "https://menutechdeveloper.github.io/libreria/snow2.png",
+        "https://menutechdeveloper.github.io/libreria/snow3.png"
+      ];
+      for (let i = 0; i < cantidad; i++) {
+        const x = Math.random() * 100;
+        const y = Math.random() * 100;
+        const size = tamano + Math.random() * tamano;
+        const dur = 4 + Math.random() * 3;
+        const delay = Math.random() * 2;
+        const img = snowImages[i % snowImages.length];
+        dots += `
+          <div class="flake" style="
+            left:${x}%;
+            top:${y}%;
+            width:${size*2}px;
+            height:${size*2}px;
+            animation-duration:${dur / velocidad}s;
+            animation-delay:${delay}s;
+            opacity:${opacidad};
+            background-image:url('${img}');
+            background-size:contain;
+            background-repeat:no-repeat;
+            background-position:center;
+          "></div>`;
+      }
+    }
+
+    this.shadowRoot.innerHTML = `
+      <style>
+        :host {
+          position:relative;
+          display:block;
+          width:100%;
+          height:100%;
+          overflow:hidden;
+          pointer-events:none;
+          z-index:1;
+          background:linear-gradient(180deg,#001b33,#002b44);
+        }
+        .flake {
+          position:absolute;
+          animation:fall linear infinite;
+          will-change: transform, opacity;
+        }
+        @keyframes fall {
+          0% { transform:translateY(0) rotate(0deg); opacity:1; }
+          100% { transform:translateY(100%) rotate(360deg); opacity:0; }
+        }
+
+        /* POPUP */
+        .popup-overlay {
+          position:fixed;
+          top:0; left:0;
+          width:100%; height:100%;
+          background:rgba(0,0,0,0.5);
+          display:${popupActivo && activo ? "flex" : "none"};
+          justify-content:center;
+          align-items:center;
+          pointer-events:auto;
+          z-index:10000;
+        }
+        .popup-content {
+          position:relative;
+          background:#fff;
+          max-width:90%;
+          max-height:80%;
+          border-radius:12px;
+          box-shadow:0 4px 20px rgba(0,0,0,0.3);
+          padding:20px;
+          text-align:center;
+          display:flex;
+          flex-direction:column;
+          gap:12px;
+          overflow:hidden;
+        }
+        .popup-content img {
+          max-width:100%;
+          max-height:60vh;
+          border-radius:8px;
+          object-fit:contain;
+        }
+        .popup-content button {
+          background:${popupColor};
+          color:#fff;
+          border:none;
+          padding:10px 16px;
+          border-radius:6px;
+          cursor:pointer;
+          font-size:1rem;
+        }
+        .popup-close {
+          position:absolute;
+          top:10px; right:10px;
+          background:transparent;
+          border:none;
+          font-size:1.5rem;
+          cursor:pointer;
+          color:#333;
+        }
+      </style>
+
+      ${dots}
+
+      <div class="popup-overlay">
+        <div class="popup-content">
+          <button class="popup-close">&times;</button>
+          ${popupImage ? `<img src="${popupImage}" alt="Promoción">` : ""}
+          ${popupLink ? `<button onclick="window.open('${popupLink}','_blank')">Ver promoción</button>` : ""}
+        </div>
+      </div>
+    `;
+
+    // Lógica popup
+    const overlay = this.shadowRoot.querySelector(".popup-overlay");
+    const closeBtn = this.shadowRoot.querySelector(".popup-close");
+    if (overlay && closeBtn) {
+      closeBtn.onclick = () => overlay.style.display = "none";
+      overlay.onclick = (e) => { if(e.target === overlay) overlay.style.display = "none"; };
+    }
+  }
+}
+
+customElements.define("menutech-navidad", MenutechNavidad);
+</script>
+
+
+
+
+    <!--=================================================================================================================================-->
+    <!--MENUTECH EVENTS-->
+    <!--=================================================================================================================================-->
+
+    <!-- MENUTECH PARTICLES -->
+    <div class="component-card" data-name="menutech-particles" data-type="visual">
+      <div class="tag">&lt;menutech-particles&gt;</div>
+      <div class="preview">
+        <menutech-particles color="#00bcd4" cantidad="40" tamano="4" velocidad="1" opacidad="0.6"></menutech-particles>
+      </div>
+      <div class="props">
+        <label>Color</label>
+        <input type="color" data-attr="color" value="#00bcd4">
+        <label>Cantidad</label>
+        <input type="number" data-attr="cantidad" value="40">
+        <label>Tamaño</label>
+        <input type="number" data-attr="tamano" value="4">
+        <label>Velocidad</label>
+        <input type="number" step="0.1" data-attr="velocidad" value="1">
+        <label>Opacidad</label>
+        <input type="number" step="0.1" data-attr="opacidad" value="0.6">
+      </div>
+      <button class="copy-btn">Copiar código</button>
+      <small>Efecto visual animado de partículas flotantes.</small>
+    </div>
+
+    <!-- MENUTECH GRADIENT -->
+    <div class="component-card" data-name="menutech-gradient" data-type="visual">
+      <div class="tag">&lt;menutech-gradient&gt;</div>
+      <div class="preview">
+        <menutech-gradient colors="#ff0000,#ff8800,#ffee00,#00ccff,#0066ff"
+          speed="100s" angle="60deg" overlay-opacity="0.5" blur="5px"></menutech-gradient>
+      </div>
+      <div class="props">
+        <label>Color 1</label>
+        <input type="color" data-attr="color1" value="#ff0000">
+        <label>Color 2</label>
+        <input type="color" data-attr="color2" value="#ff8800">
+        <label>Color 3</label>
+        <input type="color" data-attr="color3" value="#ffee00">
+        <label>Color 4</label>
+        <input type="color" data-attr="color4" value="#00ccff">
+        <label>Color 5</label>
+        <input type="color" data-attr="color5" value="#0066ff">
+        <label>Velocidad animación</label>
+        <input type="text" data-attr="speed" value="100s">
+        <label>Ángulo</label>
+        <input type="text" data-attr="angle" value="60deg">
+        <label>Opacidad overlay</label>
+        <input type="number" step="0.1" data-attr="overlay-opacity" value="0.5">
+        <label>Blur</label>
+        <input type="text" data-attr="blur" value="5px">
+      </div>
+      <button class="copy-btn">Copiar código</button>
+      <small>Gradiente animado configurable con 5 colores.</small>
+    </div>
+
+    <!-- MENUTECH CARRUSEL -->
+    <div class="component-card" data-name="menutech-carrusel" data-type="visual">
+      <div class="tag">&lt;menutech-carrusel&gt;</div>
+      <div class="preview">
+        <menutech-carrusel></menutech-carrusel>
+      </div>
+      <div class="props">
+        <label>Imágenes del carrusel</label>
+        <div class="image-inputs">
+          <input type="text" placeholder="URL de imagen 1" data-attr="image1">
+          <input type="text" placeholder="URL de imagen 2" data-attr="image2">
+          <input type="text" placeholder="URL de imagen 3" data-attr="image3">
+          <input type="text" placeholder="URL de imagen 4" data-attr="image4">
+          <input type="text" placeholder="URL de imagen 5" data-attr="image5">
+        </div>
+        <button type="button" class="add-image-btn">+ Agregar imagen</button>
+
+        <label>Ancho del slide</label>
+        <input type="text" data-attr="slide-width" value="280px">
+
+        <label>Alto del slide</label>
+        <input type="text" data-attr="slide-height" value="380px">
+      </div>
+
+      <button class="copy-btn">Copiar código</button>
+      <small>Carrusel de imágenes configurable y adaptable.</small>
+    </div>
+
+    <!-- MENUTECH NAVBAR -->
+   <div class="component-card" data-name="menutech-navbar" data-type="ui">
+  <div class="tag">&lt;menutech-navbar&gt;</div>
+  <div class="preview" style="height:90px; width: 100%;">
+    <menutech-navbar></menutech-navbar>
+  </div>
+
+  <div class="props">
+    <label>Color de fondo</label>
+    <input type="color" data-attr="color" value="">
+
+    <label>Color de letra</label>
+    <input type="color" data-attr="text-color" value="">
+
+    <label>Color hover (solo sombra)</label>
+    <input type="color" data-attr="hover-color" value="">
+
+    <hr style="margin:10px 0">
+
+    <input type="text" data-attr="text1" placeholder="Texto 1">
+    <input type="text" data-attr="link1" placeholder="URL 1">
+
+    <input type="text" data-attr="text2" placeholder="Texto 2">
+    <input type="text" data-attr="link2" placeholder="URL 2">
+
+    <input type="text" data-attr="text3" placeholder="Texto 3">
+    <input type="text" data-attr="link3" placeholder="URL 3">
+
+    <input type="text" data-attr="text4" placeholder="Texto 4">
+    <input type="text" data-attr="link4" placeholder="URL 4">
+
+    <input type="text" data-attr="text5" placeholder="Texto 5">
+    <input type="text" data-attr="link5" placeholder="URL 5">
+  </div>
+
+  <button class="copy-btn">Copiar código</button>
+  <small>Barra de navegación neomórfica editable solo en colores y enlaces.</small>
+</div>
+
+  <!-- MENUTECH HERO CARD -->
+  <div class="component-card" data-name="menutech-hero-card" data-type="hero">
+    <div class="tag">&lt;menutech-hero-card&gt;</div>
+    <div class="preview" style="height: 250px;">
+      <menutech-hero 
+        title="Título principal"
+        description="Esta es una descripción editable de la carta hero."
+        bg-image="https://picsum.photos/1200/600"
+        cta="<button style='padding:10px 18px;border:none;border-radius:8px;background:#00bcd4;color:white;font-weight:bold;cursor:pointer;'>Ver más</button>"
+        shadow-color="rgba(0,0,0,0.5)"
+        shadow-opacity="0.6">
+      </menutech-hero>
+    </div>
+
+    <div class="props">
+  <label>Título</label>
+  <input type="text" data-attr="title" placeholder="Escribe título...">
+
+  <label>Descripción</label>
+  <textarea style="width: 98%;" data-attr="description" placeholder="Escribe descripción..."></textarea>
+
+  <label>Imagen de fondo (URL)</label>
+  <input type="text" data-attr="bg-image" placeholder="https://ejemplo.com/imagen.jpg">
+
+  <label>Código CTA</label>
+  <textarea style="width: 98%;" data-attr="cta" placeholder="Menutech Code Online Order"></textarea>
+
+  <label>Color de sombra</label>
+  <input type="color" data-attr="shadow-color" value="#000000">
+
+  <label>Opacidad de sombra (0-1)</label>
+  <input type="number" step="0.1" min="0" max="1" data-attr="shadow-opacity" value="0.6">
+</div>
+
+
+    <button class="copy-btn">Copiar código</button>
+    <small>Carta Hero editable con título, descripción, imagen, CTA y sombra personalizable.</small>
+  </div>
+
+  </div>
+  <!-- ==================== EDITOR DE PLANTILLAS ==================== -->
+<h2 style="font-size: 40px;margin-top:3em; text-align:center;">Editor de Plantillas</h2>
+
+<!-- Contenedor principal con dos columnas -->
+<div style="display:flex; gap:20px; width: 100%; margin:2em auto;">
+
+  <!-- Columna de configuración (inputs) -->
+  <div id="editorControls" style="
+      flex:1;
+      max-width:35%;
+      height:700px;
+      overflow-y:auto;
+      padding:15px;
+      border:1px solid #ccc;
+      border-radius:10px;
+      scrollbar-width:none;
+      -ms-overflow-style:none;
+  ">
+    <!-- Ocultar scrollbar -->
+    <style>
+      #editorControls::-webkit-scrollbar { display: none; }
+      #editorControls label { display:block; margin-bottom:6px; }
+#editorControls textarea { width:100%; display:block; margin-bottom:12px; }
+    </style>
+
+    <!-- Inputs de configuración -->
+    <label>Color de fondo</label>
+    <input type="color" id="tplBgColor" style="width:100%;margin-bottom:8px;">
+    <label>Logo URL</label>
+    <input type="text" id="tplLogo" placeholder="URL de logo" style="width:100%;margin-bottom:8px;">
+    <label>Titulo principal Hero</label>
+    <input type="text" id="tplHero" placeholder="Texto principal" style="width:100%;margin-bottom:8px;">
+    <label>Sub titulo Hero</label>
+    <textarea id="tplDesc" placeholder="Descripción..." style="width:100%;margin-bottom:8px;"></textarea>
+    <label for="tplCustomCode" style="display:block; margin-top:8px; margin-bottom:6px;">Menutech Órdenes en línea</label>
+    <textarea id="tplCustomCode" placeholder="Código de Menutech Órdenes en Línea" style="width:100%; height:120px; display:block; margin-bottom:12px; font-family:monospace;"></textarea>
+    <label>About</label>
+    <input type="text" id="tplAbout" placeholder="Acerca de" style="width:100%;margin-bottom:8px;">
+    <label> About Descripción</label>
+    <textarea id="tplAboutdesc" placeholder="Descripción del about" style="width:100%;margin-bottom:8px;"></textarea>
+    <label>About Imagen</label>
+    <input type="text" id="tplAboutimg" placeholder="imagen del about" style="width:100%;margin-bottom:8px;">
+    <label>Servicio 1</label>
+    <input type="text" id="tplService1" placeholder="Servicio 1" style="width:100%;margin-bottom:8px;">
+    <label>Descripción</label>
+    <textarea id="tplDesc1" placeholder="Descripción del servico" style="width:100%;margin-bottom:8px;"></textarea>
+    <label>Servicio 2</label>
+    <input type="text" id="tplService2" placeholder="Servicio 2" style="width:100%;margin-bottom:8px;">
+    <label>Descripción</label>
+    <textarea id="tplDesc2" placeholder="Descripción del servicio" style="width:100%;margin-bottom:8px;"></textarea>
+    <label>Servicio 3</label>
+    <input type="text" id="tplService3" placeholder="Servicio 3" style="width:100%;margin-bottom:8px;">
+    <label>Descripción</label>
+    <textarea id="tplDesc3" placeholder="Descripción del servicio" style="width:100%;margin-bottom:8px;"></textarea>
+    <label>Servicio 4</label>
+    <input type="text" id="tplService4" placeholder="Servicio 4" style="width:100%;margin-bottom:8px;">
+    <label>Descripción</label>
+    <textarea id="tplDesc4" placeholder="Descripción del servicio" style="width:100%;margin-bottom:8px;"></textarea>
+
+    <label for="tplCustomCode2" style="display:block; margin-top:8px; margin-bottom:6px;">Custom Code</label>
+    <textarea id="tplCustomCode2" placeholder="Carrousel de MenutechUI.js" style="width:100%; height:120px; display:block; margin-bottom:12px; font-family:monospace;"></textarea>
+    <label for="tplCustomCode3" style="display:block; margin-top:8px; margin-bottom:6px;">Custom Code</label>
+    <textarea id="tplCustomCode3" placeholder="Navbar de MenutechUI.js" style="width:100%; height:120px; display:block; margin-bottom:12px; font-family:monospace;"></textarea>
+    <label for="tplCustomCode4" style="display:block; margin-top:8px; margin-bottom:6px;">Custom Code</label>
+    <textarea id="tplCustomCode4" placeholder="Form de MenutechUI.js" style="width:100%; height:120px; display:block; margin-bottom:12px; font-family:monospace;"></textarea>
+    <label for="tplCustomCode5" style="display:block; margin-top:8px; margin-bottom:6px;">Custom Code</label>
+    <textarea id="tplCustomCode5" placeholder="Código de MenutechUI.js" style="width:100%; height:120px; display:block; margin-bottom:12px; font-family:monospace;"></textarea>
+
+    <label style="display:block;margin-top:8px;">Galería de imágenes</label>
+    <div class="img-title-pair">
+      <input type="text" id="tplImg1" placeholder="Imagen 1" style="width:100%;margin-bottom:4px;">
+      <input type="text" id="tplTitle1" placeholder="Título 1" style="width:100%;margin-bottom:8px;">
+    </div>
+    <div class="img-title-pair">
+      <input type="text" id="tplImg2" placeholder="Imagen 2" style="width:100%;margin-bottom:4px;">
+      <input type="text" id="tplTitle2" placeholder="Título 2" style="width:100%;margin-bottom:8px;">
+    </div>
+    <div class="img-title-pair">
+      <input type="text" id="tplImg3" placeholder="Imagen 3" style="width:100%;margin-bottom:4px;">
+      <input type="text" id="tplTitle3" placeholder="Título 3" style="width:100%;margin-bottom:8px;">
+    </div>
+    <div class="img-title-pair">
+      <input type="text" id="tplImg4" placeholder="Imagen 4" style="width:100%;margin-bottom:4px;">
+      <input type="text" id="tplTitle4" placeholder="Título 4" style="width:100%;margin-bottom:8px;">
+    </div>
+    <div class="img-title-pair">
+      <input type="text" id="tplImg5" placeholder="Imagen 5" style="width:100%;margin-bottom:4px;">
+      <input type="text" id="tplTitle5" placeholder="Título 5" style="width:100%;margin-bottom:8px;">
+    </div>
+    <div class="img-title-pair">
+      <input type="text" id="tplImg6" placeholder="Imagen 6" style="width:100%;margin-bottom:4px;">
+      <input type="text" id="tplTitle6" placeholder="Título 6" style="width:100%;margin-bottom:8px;">
+    </div>
+    <label>Horario</label>
+    <textarea id="tplHorario" placeholder="Horario" style="width:100%;margin-bottom:8px;"></textarea>
+    <label>Teléfono</label>
+    <input type="text" id="tplTel" placeholder="Teléfono" style="width:100%;margin-bottom:8px;">
+    <label>Correo</label>
+    <input type="text" id="tplCorreo" placeholder="Correo" style="width:100%;margin-bottom:8px;">
+    <label>Dirección</label>
+    <input type="text" id="tplAddress" placeholder="Dirección" style="width:100%;margin-bottom:8px;">
+    <label>Facebook</label>
+    <input type="text" id="tplFacebook" placeholder="Facebook URL" style="width:100%;margin-bottom:8px;">
+    <label>Instagram</label>
+    <input type="text" id="tplInstagram" placeholder="Instagram URL" style="width:100%;margin-bottom:8px;">
+    <button id="tplCopy" style="padding:8px 12px; background:#00bcd4;color:#fff;border:none;border-radius:6px;cursor:pointer;">Copiar HTML</button>
+
+  </div>
+
+  <!-- Columna de vista previa (iframe) -->
+  <div style="flex:1; max-width:75%; display:flex; flex-direction:column; gap:10px;">
+    
+    <!-- Botones de plantillas sobre el iframe -->
+    <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+      <button class="tab-btn" data-tab="1">Plantilla 1</button>
+      <button class="tab-btn" data-tab="2">Plantilla 2</button>
+      <button class="tab-btn" data-tab="3">Plantilla 3</button>
+      <button class="tab-btn" data-tab="4">Plantilla 4</button>
+      <button class="tab-btn" data-tab="5">Plantilla 5</button>
+      <button class="tab-btn" data-tab="6">Plantilla 6</button>
+    </div>
+
+    <div id="templateContainer" style="
+        flex:1;
+        border:1px solid #ccc;
+        border-radius:10px;
+        overflow:hidden;
+        position:relative;
+    ">
+      <iframe id="templateFrame" src="./plantilla1.html" style="width:100%;height:100%;border:none;"></iframe>
+    </div>
+
+  </div>
+
+</div>
+
+
+  <script>
+  /* ================== PLANTILLAS ================== */
+
+  const tabButtons = document.querySelectorAll(".tab-btn");
+  const iframe = document.getElementById("templateFrame");
+
+  // Objeto que guarda la configuración actual
+  const config = {
+    bgColor: '',
+    logo: '',
+    hero: '',
+    desc: '',
+    customCode: '',
+    customCode2:'',
+    customCode3:'',
+    customCode4:'',
+    customCode5:'',
+    About: '',
+    Aboutdesc: '',
+    Aboutimg: '',
+    horario: '',
+    tel: '',
+    correo: '',
+    address: '',
+    facebook: '',
+    instagram: '',
+    img1: '', title1: '',
+    img2: '', title2: '',
+    img3: '', title3: '',
+    img4: '', title4: '',
+    img5: '', title5: '',
+    img6: '', title6: '',
+    service1: '',
+    desc1: '',
+    service2: '',
+    desc2: '',
+    service3: '',
+    desc3: '',
+    service4: '',
+    desc4: ''
+  };
+
+  // Mapa de IDs de inputs a propiedades del objeto config
+  const mapIdToConfig = {
+    tplBgColor: 'bgColor',
+    tplLogo: 'logo',
+    tplHero: 'hero',
+    tplDesc: 'desc',
+    tplCustomCode: 'customCode',
+    tplCustomCode2: 'carousel',
+    tplCustomCode3: 'navbar',
+    tplCustomCode4: 'form',
+    tplCustomCode5: 'customCode2',
+    tplAbout: 'about',
+    tplAboutdesc: 'aboutdesc',
+    tplAboutimg: 'aboutimg',
+    tplHorario: 'horario',
+    tplTel: 'tel',
+    tplCorreo: 'correo',
+    tplAddress: 'address',
+    tplFacebook: 'facebook',
+    tplInstagram: 'instagram',
+    tplImg1: 'img1',
+    tplTitle1: 'title1',
+    tplImg2: 'img2',
+    tplTitle2: 'title2',
+    tplImg3: 'img3',
+    tplTitle3: 'title3',
+    tplImg4: 'img4',
+    tplTitle4: 'title4',
+    tplImg5: 'img5',
+    tplTitle5: 'title5',
+    tplImg6: 'img6',
+    tplTitle6: 'title6',
+    tplService1: 'service1',
+    tplDesc1: 'desc1',
+    tplService2: 'service2',
+    tplDesc2: 'desc2',
+    tplService3: 'service3',
+    tplDesc3: 'desc3',
+    tplService4: 'service4',
+    tplDesc4: 'desc4'
+  };
+
+  // Lista de IDs de inputs
+  const inputs = Object.keys(mapIdToConfig);
+
+// Función que actualiza la vista previa en el iframe
+function updateIframe() {
+  const doc = iframe.contentDocument || iframe.contentWindow.document;
+  if (!doc) return;
+  try {
+    if(doc.body) doc.body.style.backgroundColor = config.bgColor || '';
+
+    // Logo por clase
+    doc.querySelectorAll('.logo').forEach(el => el.src = config.logo || '');
+
+    // Elementos únicos por ID
+    const hero = doc.getElementById('hero'); if(hero) hero.textContent = config.hero || '';
+    const desc = doc.getElementById('desc'); if(desc) desc.textContent = config.desc || '';
+    const about = doc.getElementById('about'); if(about) about.textContent = config.about || '';
+    const aboutdesc = doc.getElementById('aboutdesc'); if(aboutdesc) aboutdesc.textContent = config.aboutdesc || '';
+    const aboutimg = doc.getElementById('aboutimg'); if (aboutimg) aboutimg.src = config.aboutimg || '';
+    const horario = doc.getElementById('horario'); if(horario) horario.textContent = config.horario || '';
+    const tel = doc.getElementById('tel'); if(tel) tel.textContent = config.tel || '';
+    const correo = doc.getElementById('correo'); if(correo) correo.textContent = config.correo || '';
+
+    // Galería
+    for(let i=1;i<=6;i++){
+      doc.querySelectorAll(`.img${i}`).forEach(el => el.src = config['img'+i] || '');
+      doc.querySelectorAll(`.title${i}`).forEach(el => el.textContent = config['title'+i] || '');
+    }
+
+    // Nuevas variables
+    const service1 = doc.getElementById('service1'); if(service1) service1.textContent = config.service1 || '';
+    const desc1 = doc.getElementById('desc1'); if(desc1) desc1.textContent = config.desc1 || '';
+    const service2 = doc.getElementById('service2'); if(service2) service2.textContent = config.service2 || '';
+    const desc2 = doc.getElementById('desc2'); if(desc2) desc2.textContent = config.desc2 || '';
+    const service3 = doc.getElementById('service3'); if(service3) service3.textContent = config.service3 || '';
+    const desc3 = doc.getElementById('desc3'); if(desc3) desc3.textContent = config.desc3 || '';
+    const service4 = doc.getElementById('service4'); if(service4) service4.textContent = config.service4 || '';
+    const desc4 = doc.getElementById('desc4'); if(desc4) desc4.textContent = config.desc4 || '';
+    const address = doc.getElementById('address'); if(address) address.textContent = config.address || '';
+    const facebook = doc.getElementById('facebook'); if(facebook) facebook.href = config.facebook || '';
+    const instagram = doc.getElementById('instagram'); if(instagram) instagram.href = config.instagram || '';
+
+    /* AGREGA ESTE BLOQUE AQUÍ */
+
+  // BLOQUE CORREGIDO PARA INYECTAR customCode EN TODAS LAS .customCodeArea
+// Limpia los contenedores
+doc.querySelectorAll('.customCodeArea').forEach(el => el.innerHTML = '');
+
+if (config.customCode) {
+  // temp es un contenedor en el contexto del editor
+  const temp = document.createElement('div');
+  temp.innerHTML = config.customCode;
+
+  // Reinyecta scripts para que se ejecuten en el contexto del iframe
+  const scripts = Array.from(temp.querySelectorAll('script'));
+  scripts.forEach(oldScript => {
+    const newScript = doc.createElement('script');
+    if (oldScript.src) {
+      newScript.src = oldScript.src;
+      // preservar atributos async/defer si vienen en el string
+      if (oldScript.hasAttribute('async')) newScript.async = true;
+      if (oldScript.hasAttribute('defer')) newScript.defer = true;
+    } else {
+      newScript.textContent = oldScript.textContent;
+    }
+    oldScript.replaceWith(newScript);
+  });
+
+  // Ahora inserta/clona el contenido en cada contenedor de la plantilla
+  doc.querySelectorAll('.customCodeArea').forEach(container => {
+    // clonar para cada contenedor y evitar mover nodos
+    container.appendChild(temp.cloneNode(true));
+  });
+}
+    /* FIN DEL BLOQUE NUEVO */
+    /*PARA LOS DEMAS CUSTOM CODES DE MENUTECHUI*/
+const codeAreas = {
+  carousel: '#carousel',
+  navbar: '#navbar',
+  customCode2: '#customCode2',
+  form: '#form'
+};
+
+for (const [key, selector] of Object.entries(codeAreas)) {
+  const code = config[key];
+  const areas = doc.querySelectorAll(selector);
+
+  // Limpia el contenido previo
+  areas.forEach(el => el.innerHTML = '');
+
+  if (!code) continue;
+
+  // Crear un contenedor temporal con el código HTML
+  const temp = document.createElement('div');
+  temp.innerHTML = code;
+
+  // Reinyecta scripts para que se ejecuten dentro del iframe
+  const scripts = Array.from(temp.querySelectorAll('script'));
+  scripts.forEach(oldScript => {
+    const newScript = doc.createElement('script');
+    if (oldScript.src) {
+      newScript.src = oldScript.src;
+      if (oldScript.hasAttribute('async')) newScript.async = true;
+      if (oldScript.hasAttribute('defer')) newScript.defer = true;
+    } else {
+      newScript.textContent = oldScript.textContent;
+    }
+    oldScript.replaceWith(newScript);
+  });
+
+  // Inserta el contenido en cada contenedor correspondiente
+  areas.forEach(container => {
+    container.appendChild(temp.cloneNode(true));
+  });
+}
+/*PARA LOS DEMAS CUSTOM CODES DE MENUTECHUI FIN*/
+
+  } catch(e){ 
+    console.warn('No se pudo actualizar la vista previa del iframe'); 
+  }
+}
+
+
+
+  // Escuchar cambios en los inputs
+  inputs.forEach(id => {
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.addEventListener('input', e => {
+      const key = mapIdToConfig[id];
+      if(key) config[key] = e.target.value;
+      updateIframe();
+    });
+  });
+
+  // Cambiar plantilla sin perder configuración
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tab = btn.dataset.tab;
+      iframe.src = `./plantilla${tab}.html`;
+      iframe.onload = () => updateIframe();
+
+      // Marcar botón activo
+      tabButtons.forEach(b => { b.style.background=''; b.style.color=''; });
+      btn.style.background='#00bcd4';
+      btn.style.color='#fff';
+    });
+  });
+  // Botón de copiar el código de la plantilla
+const tplCopyBtn = document.getElementById('tplCopy');
+tplCopyBtn.addEventListener('click', () => {
+  try {
+    const doc = iframe.contentDocument || iframe.contentWindow.document;
+    if(!doc) return;
+    const doctype = "<!DOCTYPE html>\n";
+    const html = doc.documentElement.outerHTML;
+    const fullHtml = doctype + html;
+    navigator.clipboard.writeText(fullHtml).then(() => {
+      alert("Código copiado al portapapeles!");
+    }).catch(err => {
+      console.error("No se pudo copiar: ", err);
+    });
+  } catch(e){
+    console.error("Error al copiar código: ", e);
+  }
+});
+  // Primer botón activo
+  tabButtons[0].style.background='#00bcd4';
+  tabButtons[0].style.color='#fff';
+    // ==============================================================================================
+    // ==============================================================================================
+    // ==============================================================================================
+    // ==============================================================================================
+    /* === CUSTOM ELEMENTS === */
+    // menutech-hero
+    class MenutechHero extends HTMLElement {
+  static get observedAttributes() {
+    return ['title', 'description', 'bg-image', 'cta', 'shadow-color', 'shadow-opacity'];
+  }
+
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+  }
+
+  connectedCallback() {
+    this.render();
+  }
+
+  attributeChangedCallback() {
+    this.render();
+  }
+
+  render() {
+    const title = this.getAttribute('title') || '';
+    const desc = this.getAttribute('description') || '';
+    const bg = this.getAttribute('bg-image') || '';
+    const cta = this.getAttribute('cta') || '';
+    const shadowColor = this.getAttribute('shadow-color') || 'rgba(0,0,0,0.5)';
+    const shadowOpacity = this.getAttribute('shadow-opacity') || '0.5';
+
+    this.shadowRoot.innerHTML = `
+      <style>
+        .hero-card {
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          height: 250px;
+          color: white;
+          text-align: center;
+          background: url('${bg}') center/cover no-repeat;
+          border-radius: 16px;
+          overflow: hidden;
+        }
+
+        .overlay {
+          position: absolute;
+          inset: 0;
+          background: ${shadowColor};
+          opacity: ${shadowOpacity};
+          transition: opacity 0.3s ease;
+        }
+
+        .content {
+          position: relative;
+          z-index: 2;
+          padding: 20px;
+          max-width: 90%;
+        }
+
+        h2 {
+          margin: 0 0 10px;
+          font-size: 1.8em;
+        }
+
+        p {
+          margin: 0 0 20px;
+          font-size: 1em;
+          line-height: 1.4;
+        }
+
+        .cta {
+          display: inline-block;
+        }
+
+        .hero-card:hover .overlay {
+          opacity: calc(${shadowOpacity} + 0.2);
+        }
+      </style>
+
+      <div class="hero-card">
+        <div class="overlay"></div>
+        <div class="content">
+          <h2>${title}</h2>
+          <p>${desc}</p>
+          <div class="cta">${cta}</div>
+        </div>
+      </div>
+    `;
+  }
+}
+
+customElements.define('menutech-hero', MenutechHero);
+    // menutech-navbar
+    class MenutechNavbar extends HTMLElement {
+  constructor() {
+    super();
+    this.shadow = this.attachShadow({mode:"open"});
+    this.render();
+  }
+
+  static get observedAttributes() {
+    return ["color","text-color","hover-color",
+            "link1","link2","link3","link4","link5",
+            "text1","text2","text3","text4","text5"];
+  }
+
+  attributeChangedCallback() { this.render(); }
+
+  render() {
+    const color = this.getAttribute("color") || "#e0e0e0";
+    const textColor = this.getAttribute("text-color") || "#444";
+    const hoverColor = this.getAttribute("hover-color") || "#00bcd4";
+
+    const links = [
+      this.getAttribute("link1") || "#",
+      this.getAttribute("link2") || "#",
+      this.getAttribute("link3") || "#",
+      this.getAttribute("link4") || "#",
+      this.getAttribute("link5") || "#"
+    ];
+
+    const texts = [
+      this.getAttribute("text1") || "Home",
+      this.getAttribute("text2") || "Services",
+      this.getAttribute("text3") || "Gallery",
+      this.getAttribute("text4") || "Contact",
+      this.getAttribute("text5") || ""
+    ];
+
+    const previewLinks = texts.map((t,i)=>t ? `<a href="${links[i]}">${t}</a>` : "").filter(a=>a!=="");
+
+    this.shadow.innerHTML = `
+      <style>
+        :host { display:block; width:100%; height:100%; }
+        nav {
+          display:flex;
+          justify-content: space-between;
+          align-items:center;
+          background: ${color};
+          padding:14px 20px;
+          border-radius:35px;
+          box-shadow: 8px 8px 16px rgba(0,0,0,0.15), -8px -8px 16px rgba(255,255,255,0.9);
+          backdrop-filter: blur(10px);
+          width: 100%;
+          height: 100%;
+          box-sizing: border-box;
+        }
+        a {
+          flex:1;
+          text-align:center;
+          text-decoration:none;
+          color:${textColor};
+          font-size:0.9rem;
+          font-weight:500;
+          padding:10px 0;
+          border-radius:18px;
+          background: rgba(255,255,255,0.1);
+          box-shadow: inset 2px 2px 4px rgba(255,255,255,0.6), inset -2px -2px 4px rgba(190,190,190,0.5);
+          transition: all 0.25s ease;
+          margin:0 4px;
+        }
+        a:hover {
+          box-shadow: inset 4px 4px 8px ${hoverColor}, inset -4px -4px 8px ${hoverColor};
+        }
+      </style>
+      <nav>${previewLinks.join("")}</nav>
+    `;
+  }
+}
+customElements.define("menutech-navbar", MenutechNavbar);
+
+// Interactividad tarjeta
+const navbarCard = document.querySelector('[data-name="menutech-navbar"]');
+if(navbarCard){
+  const preview = navbarCard.querySelector(".preview").firstElementChild;
+  const inputs = navbarCard.querySelectorAll("[data-attr]");
+  const copyBtn = navbarCard.querySelector(".copy-btn");
+
+  // Actualiza los atributos en tiempo real
+  inputs.forEach(input => {
+    input.addEventListener("input", e=>{
+      const value = e.target.value;
+      if (value.trim() !== "") {
+        preview.setAttribute(input.dataset.attr, value);
+      } else {
+        preview.removeAttribute(input.dataset.attr);
+      }
+    });
+  });
+
+  // Copiar código con todos los atributos editables
+  copyBtn.addEventListener("click", ()=>{
+    const previewEl = navbarCard.querySelector("menutech-navbar");
+
+    // Incluye todos los atributos configurables
+    const attrs = Array.from(previewEl.attributes)
+      .filter(a => [
+        "color","opacity",
+        "link1","link2","link3","link4","link5",
+        "text1","text2","text3","text4","text5"
+      ].includes(a.name) && a.value.trim() !== "");
+
+    const code = attrs.length 
+      ? `<menutech-navbar ${attrs.map(a=>`${a.name}="${a.value}"`).join(" ")}></menutech-navbar>` 
+      : `<menutech-navbar></menutech-navbar>`;
+
+    navigator.clipboard.writeText(code);
+    copyBtn.textContent = "¡Copiado!";
+    setTimeout(()=>copyBtn.textContent="Copiar código",1500);
+  });
+}
+  // end menutech-navbar
+
+    class MenutechForm extends HTMLElement {
+      static get observedAttributes() { return ["bg-color","label-color","input-color","placeholder-color","button-color","button-text-color","max-width"]; }
+      constructor() { super(); this.attachShadow({mode:"open"}); this.render(); }
+      attributeChangedCallback() { this.render(); }
+      render() {
+        const bg = this.getAttribute("bg-color") || "#fff";
+        const label = this.getAttribute("label-color") || "#000";
+        const inputC = this.getAttribute("input-color") || "#000";
+        const placeholder = this.getAttribute("placeholder-color") || "#555";
+        const btnBg = this.getAttribute("button-color") || "#ff6600";
+        const btnText = this.getAttribute("button-text-color") || "#fff";
+        const maxW = this.getAttribute("max-width") || "400px";
+
+        this.shadowRoot.innerHTML = `
+          <style>
+            :host { display:block; width:100%; height:100%; }
+            form {
+              background:${bg};
+              padding:1em;
+              border-radius:10px;
+              max-width:${maxW};
+              margin:auto;
+              display:flex;
+              flex-direction:column;
+              gap:0.8em;
+            }
+            label { color:${label}; font-weight:600; }
+            input { color:${inputC}; border:1px solid #ccc; border-radius:6px; padding:5px; }
+            input::placeholder { color:${placeholder}; }
+            button {
+              background:${btnBg};
+              color:${btnText};
+              border:none;
+              padding:6px 10px;
+              border-radius:6px;
+              cursor:pointer;
+            }
+          </style>
+          <form>
+            <label>Nombre</label>
+            <input type="text" placeholder="Escribe tu nombre">
+            <label>Email</label>
+            <input type="email" placeholder="Escribe tu email">
+            <button>Enviar</button>
+          </form>
+        `;
+      }
+    }
+    customElements.define("menutech-form", MenutechForm);
+
+    class MenutechParticles extends HTMLElement {
+      static get observedAttributes() { return ["color","cantidad","tamano","velocidad","opacidad"]; }
+      constructor() { super(); this.attachShadow({mode:"open"}); this.render(); }
+      attributeChangedCallback() { this.render(); }
+
+      render() {
+        const color = this.getAttribute("color") || "#00bcd4";
+        const cantidad = parseInt(this.getAttribute("cantidad")) || 30;
+        const tamano = parseFloat(this.getAttribute("tamano")) || 4;
+        const velocidad = parseFloat(this.getAttribute("velocidad")) || 1;
+        const opacidad = parseFloat(this.getAttribute("opacidad")) || 0.6;
+
+        let dots = "";
+        for(let i=0;i<cantidad;i++){
+          const x = Math.random()*100;
+          const y = Math.random()*100;
+          const size = tamano + Math.random()*tamano;
+          const dur = 4 + Math.random()*3;
+          const delay = Math.random()*2;
+          dots += `<div class="dot" style="left:${x}%; top:${y}%; width:${size}px; height:${size}px; animation-duration:${dur/velocidad}s; animation-delay:${delay}s;"></div>`;
+        }
+
+        this.shadowRoot.innerHTML=`
+          <style>
+            :host {
+              display:block;
+              position:relative;
+              width:100%;
+              height:100%;
+              overflow:hidden;
+            }
+            .dot {
+              position:absolute;
+              background:${color};
+              border-radius:50%;
+              opacity:${opacidad};
+              animation:float ease-in-out infinite;
+            }
+            @keyframes float {
+              0%,100% { transform:translateY(0); }
+              50% { transform:translateY(-15px); }
+            }
+          </style>
+          ${dots}
+        `;
+      }
+    }
+    customElements.define("menutech-particles", MenutechParticles);
+
+    class MenutechGradient extends HTMLElement {
+      static get observedAttributes() { return ["color1","color2","color3","color4","color5","speed","angle","overlay-opacity","blur"]; }
+      constructor() { super(); this.attachShadow({mode:"open"}); this.render(); }
+      attributeChangedCallback() { this.render(); }
+      render() {
+        const colors = [
+          this.getAttribute("color1") || "#ff0000",
+          this.getAttribute("color2") || "#ff8800",
+          this.getAttribute("color3") || "#ffee00",
+          this.getAttribute("color4") || "#00ccff",
+          this.getAttribute("color5") || "#0066ff"
+        ];
+        const speed = this.getAttribute("speed") || "100s";
+        const angle = this.getAttribute("angle") || "60deg";
+        const overlay = this.getAttribute("overlay-opacity") || "0.5";
+        const blur = this.getAttribute("blur") || "5px";
+
+        this.shadowRoot.innerHTML=`
+          <style>
+            :host {
+              display:block;
+              width:100%;
+              height:100%;
+              border-radius:10px;
+              overflow:hidden;
+              position:relative;
+            }
+            .grad{
+              width:100%;
+              height:100%;
+              background: linear-gradient(${angle}, ${colors.join(",")});
+              background-size: 400% 400%;
+              animation: gradAnim ${speed} ease infinite;
+              filter: blur(${blur});
+              transition: background 0.5s ease;
+            }
+            .overlay{
+              position:absolute;
+              top:0;left:0;width:100%;height:100%;
+              background:rgba(0,0,0,${overlay});
+            }
+            @keyframes gradAnim{
+              0%{background-position:0% 50%;}
+              50%{background-position:100% 50%;}
+              100%{background-position:0% 50%;}
+            }
+          </style>
+          <div class="grad"></div>
+          <div class="overlay"></div>
+        `;
+      }
+    }
+    customElements.define("menutech-gradient", MenutechGradient);
+
+    class MenutechCarrusel extends HTMLElement {
+      static get observedAttributes() { return ["images","slide-width","slide-height"]; }
+      constructor() { super(); this.attachShadow({mode:"open"}); this.render(); }
+      attributeChangedCallback() { this.render(); }
+
+      render() {
+        const defaultImgs = [
+          "https://placehold.co/600x400",
+          "https://placehold.co/600x400/FF0000/FFF",
+          "https://placehold.co/600x400/00FF00/000"
+        ];
+        const raw = this.getAttribute("images");
+        const imgs = raw ? raw.split(",").map(s => s.trim()).filter(Boolean) : defaultImgs.slice();
+        const width = this.getAttribute("slide-width") || "280px";
+        const height = this.getAttribute("slide-height") || "380px";
+
+        this.shadowRoot.innerHTML = `
+          <style>
+            :host {
+              display:block;
+              width:100%;
+              height:100%;
+              border-radius:10px;
+              overflow:hidden;
+              position:relative;
+              box-sizing:border-box;
+              padding:8px;
+            }
+            .carousel {
+              display:flex;
+              gap:10px;
+              align-items:center;
+              height:100%;
+              overflow-x:auto;
+              scroll-behavior:smooth;
+            }
+            .carousel::-webkit-scrollbar{ display:none; }
+            .carousel img {
+              width:${width};
+              height:${height};
+              object-fit:cover;
+              border-radius:10px;
+              flex-shrink:0;
+              cursor:pointer;
+              transition:transform .3s ease;
+            }
+            .carousel img:hover { transform:scale(1.05); }
+          </style>
+          <div class="carousel">
+            ${imgs.map(i => `<img src="${i}" loading="lazy" data-src="${i}">`).join("")}
+          </div>
+        `;
+
+        const imgsEls = Array.from(this.shadowRoot.querySelectorAll("img"));
+        imgsEls.forEach(imgEl => {
+          imgEl.addEventListener("click", () => {
+            window.open(imgEl.getAttribute("data-src"), "_blank");
+          });
+        });
+      }
+    }
+    customElements.define("menutech-carrusel", MenutechCarrusel);
+
+    /* === INTERACTIVIDAD === */
+    document.querySelectorAll(".component-card").forEach(card => {
+      const preview = card.querySelector(".preview").firstElementChild;
+      const inputs = card.querySelectorAll("[data-attr]");
+      const copyBtn = card.querySelector(".copy-btn");
+
+      inputs.forEach(input => {
+        input.addEventListener("input", e => {
+          const name = input.dataset.attr;
+          if (/^image\d+$/.test(name)) {
+            const container = card.querySelector(".image-inputs");
+            const urls = Array.from(container.querySelectorAll("input"))
+              .map(inp => inp.value.trim())
+              .filter(v => v);
+            if (urls.length) preview.setAttribute("images", urls.join(","));
+            else preview.removeAttribute("images");
+            return;
+          }
+          preview.setAttribute(name, e.target.value);
+        });
+      });
+
+      copyBtn.addEventListener("click", () => {
+        const tag = preview.tagName.toLowerCase();
+        const attrs = Array.from(preview.attributes).map(a => `${a.name}="${a.value}"`).join(" ");
+        const code = `<${tag} ${attrs}></${tag}>`;
+        navigator.clipboard.writeText(code);
+        copyBtn.textContent = "¡Copiado!";
+        setTimeout(() => copyBtn.textContent = "Copiar código", 1500);
+      });
+
+      const addBtn = card.querySelector(".add-image-btn");
+      if (addBtn) {
+        addBtn.addEventListener("click", () => {
+          const container = card.querySelector(".image-inputs");
+          const nextIndex = container.querySelectorAll("input").length + 1;
+          const input = document.createElement("input");
+          input.type = "text";
+          input.placeholder = `URL de imagen ${nextIndex}`;
+          input.dataset.attr = `image${nextIndex}`;
+          container.appendChild(input);
+
+          input.addEventListener("input", (e) => {
+            const urls = Array.from(container.querySelectorAll("input"))
+              .map(inp => inp.value.trim())
+              .filter(v => v);
+            if (urls.length) preview.setAttribute("images", urls.join(","));
+            else preview.removeAttribute("images");
+          });
+        });
+      }
+    });
+
+    const search = document.getElementById("searchInput");
+    const grid = document.getElementById("componentGrid");
+    search.addEventListener("input", () => {
+      const q = search.value.toLowerCase();
+      grid.querySelectorAll(".component-card").forEach(card => {
+        const name = card.dataset.name.toLowerCase();
+        card.style.display = name.includes(q) ? "" : "none";
+      });
+    });
+  </script>
+</body>
+</html>

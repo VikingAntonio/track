@@ -316,10 +316,10 @@ h2 {
     <!--=================================================================================================================================-->
     <!--MENUTECH EVENTS-->
     <!--=================================================================================================================================-->
-    <div class="component-card" data-name="menutech-navidad" data-type="visual">
+<div class="component-card" data-name="menutech-navidad" data-type="visual">
   <div class="tag">&lt;menutech-navidad&gt;</div>
 
-  <div class="preview" style="height:200px; background:#001b33; border-radius:8px; overflow:hidden;">
+  <div class="preview" style="height:200px; background:#001b33; border-radius:8px; overflow:hidden; position:relative;">
     <menutech-navidad></menutech-navidad>
   </div>
 
@@ -327,12 +327,12 @@ h2 {
     <!-- POPUP -->
     Mostrar Popup
     <label class="switch">
-  <input type="checkbox" data-attr="popup-activo">
-  <span class="slider"></span>
-</label>
+      <input type="checkbox" data-attr="popup-activo">
+      <span class="slider"></span>
+    </label>
 
     <div class="popup-fields" style="display:none;">
-      <label>Imagen Promocional (URL):</label>
+      <label>Imagen Promocional:</label>
       <input type="url" placeholder="https://ejemplo.com/imagen.png" data-attr="popup-image">
 
       <label>Enlace del botón:</label>
@@ -352,6 +352,12 @@ h2 {
 
     <hr>
 
+    <label>Tamaño de Santa:</label>
+    <input type="range" min="100" max="800" step="10" value="450" data-attr="santa-tamano">
+
+    <label>Velocidad de Santa:</label>
+    <input type="range" min="1" max="10" step="0.5" value="3" data-attr="santa-velocidad">
+
     <!-- PARTÍCULAS -->
     <label>Color de copos:</label>
     <input type="color" data-attr="color" value="#ffffff">
@@ -370,7 +376,7 @@ h2 {
   </div>
 
   <button class="copy-btn">Copiar código</button>
-  <small>Animación de nieve navideña con popup opcional y rango de días configurables.</small>
+  <small>Evento Navidad</small>
 </div>
 
 <style>
@@ -405,6 +411,17 @@ input:checked + .slider {
 input:checked + .slider:before {
   transform:translateX(24px);
 }
+
+/* ===== Santa Claus en modo preview ===== */
+.preview #santa {
+  position: absolute;
+  width: 450px;
+  top: 50%;
+  left: -200px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 10;
+}
 </style>
 
 <script>
@@ -434,7 +451,7 @@ class MenutechNavidad extends HTMLElement {
     return [
       "color","cantidad","tamano","velocidad","opacidad",
       "popup-activo","popup-image","popup-link","popup-color",
-      "fecha-inicio","fecha-fin"
+      "fecha-inicio","fecha-fin", "santa-tamano","santa-velocidad"
     ];
   }
 
@@ -460,34 +477,25 @@ class MenutechNavidad extends HTMLElement {
     const popupColor = this.getAttribute("popup-color") || "#d32f2f";
     const fechaInicio = this.getAttribute("fecha-inicio") || "2025-12-25";
     const fechaFin = this.getAttribute("fecha-fin") || "2025-12-25";
+    const santaTamano = parseFloat(this.getAttribute("santa-tamano")) || 450;
+const santaVelocidad = parseFloat(this.getAttribute("santa-velocidad")) || 3;
 
     const hoy = new Date();
-const enEditor = this.closest('.preview') !== null;
+    const enEditor = this.closest('.preview') !== null;
 
-// Fechas configuradas
-const inicio = new Date(fechaInicio);
-const fin = new Date(fechaFin);
+    const inicio = new Date(fechaInicio);
+    const fin = new Date(fechaFin);
+    const navidad = new Date(hoy.getFullYear(), 11, 25);
+    const fechasPorDefecto = fechaInicio === "2025-12-25" && fechaFin === "2025-12-25";
 
-// Fecha de navidad por defecto (25 diciembre)
-const navidad = new Date(hoy.getFullYear(), 11, 25); // mes 11 = diciembre
-
-// Si las fechas son iguales al valor por defecto, se toma navidad como única fecha
-const fechasPorDefecto =
-  fechaInicio === "2025-12-25" && fechaFin === "2025-12-25";
-
-// Activo si:
-// - Está en modo editor
-// - O si es navidad (por defecto)
-// - O si hoy está entre el rango configurado
-let activo = false;
-if (enEditor) {
-  activo = true;
-} else if (fechasPorDefecto) {
-  activo = hoy.toDateString() === navidad.toDateString();
-} else {
-  activo = hoy >= inicio && hoy <= fin;
-}
-
+    let activo = false;
+    if (enEditor) {
+      activo = true;
+    } else if (fechasPorDefecto) {
+      activo = hoy.toDateString() === navidad.toDateString();
+    } else {
+      activo = hoy >= inicio && hoy <= fin;
+    }
 
     // Copos de nieve SOLO en vista previa
     let dots = "";
@@ -606,13 +614,64 @@ if (enEditor) {
       </div>
     `;
 
-    // Lógica popup
     const overlay = this.shadowRoot.querySelector(".popup-overlay");
     const closeBtn = this.shadowRoot.querySelector(".popup-close");
     if (overlay && closeBtn) {
       closeBtn.onclick = () => overlay.style.display = "none";
       overlay.onclick = (e) => { if(e.target === overlay) overlay.style.display = "none"; };
     }
+
+    // ===== Santa solo visible en la vista previa =====
+   if (enEditor) {
+  const preview = this.closest('.preview');
+  let santa = preview.querySelector('#santa');
+
+  // Crear si no existe
+  if (!santa) {
+    santa = document.createElement('img');
+    santa.id = 'santa';
+    santa.src = './santa.gif';
+    santa.alt = 'Santa volando';
+    preview.appendChild(santa);
+  }
+
+  // Actualizar tamaño SIEMPRE
+  santa.style.width = santaTamano + 'px';
+
+  // Si ya había animación previa, detenerla
+  if (santa._animFrame) cancelAnimationFrame(santa._animFrame);
+
+  let posX = -200;
+  let posY = preview.offsetHeight / 2;
+  let dirX = 1;
+  let dirY = (Math.random() < 0.5 ? 1 : -1);
+  let velocidad = santaVelocidad;
+
+  function moverSanta() {
+    if (!santa) return;
+
+    posX += dirX * velocidad;
+    posY += dirY * 0.5;
+
+    if (posY < 50 || posY > santa.parentElement.offsetHeight - 150) dirY *= -1;
+    if (posX > santa.parentElement.offsetWidth) {
+      dirX = -1;
+      santa.style.transform = "translateY(-50%) scaleX(-1)";
+    }
+    if (posX < -200) {
+      dirX = 1;
+      santa.style.transform = "translateY(-50%) scaleX(1)";
+    }
+
+    santa.style.left = `${posX}px`;
+    santa.style.top = `${posY}px`;
+
+    santa._animFrame = requestAnimationFrame(moverSanta);
+  }
+
+  moverSanta();
+}
+
   }
 }
 
@@ -622,9 +681,444 @@ customElements.define("menutech-navidad", MenutechNavidad);
 
 
 
+
     <!--=================================================================================================================================-->
     <!--MENUTECH EVENTS-->
     <!--=================================================================================================================================-->
+    <!--=================================================================================================================================-->
+<!--MENUTECH HALLOWEEN-->
+<!--=================================================================================================================================-->
+<div class="component-card" data-name="menutech-halloween" data-type="visual">
+  <div class="tag">&lt;menutech-halloween&gt;</div>
+
+  <div class="preview" style="height:200px; background:#1a0f0f; border-radius:8px; overflow:hidden;">
+    <menutech-halloween></menutech-halloween>
+  </div>
+
+  <div class="props" style="max-height:320px; overflow:auto;">
+    <!-- POPUP -->
+    Mostrar Popup
+    <label class="switch">
+      <input type="checkbox" data-attr="popup-activo-hw">
+      <span class="slider"></span>
+    </label>
+
+    <div class="popup-fields-hw" style="display:none;">
+      <label>Imagen Promocional:</label>
+      <input type="url" placeholder="https://ejemplo.com/imagen.png" data-attr="popup-image-hw">
+
+      <label>Enlace del botón:</label>
+      <input type="url" placeholder="https://ejemplo.com" data-attr="popup-link-hw">
+
+      <label>Color del botón:</label>
+      <input type="color" data-attr="popup-color-hw" value="#ff6600">
+    </div>
+
+    <hr>
+
+    <!-- DURACIÓN -->
+    <label>Inicio de promoción:</label>
+    <input type="date" data-attr="fecha-inicio-hw" value="2025-10-31">
+    <label>Fin de promoción:</label>
+    <input type="date" data-attr="fecha-fin-hw" value="2025-10-31">
+
+    <hr>
+
+    <!-- PARTÍCULAS -->
+    <label>Tamaño calabaza:</label>
+    <input type="range" min="30" max="150" value="60" data-attr="tamano-pumpkin-hw">
+
+    <label>Tamaño murciélago:</label>
+    <input type="range" min="20" max="150" value="50" data-attr="tamano-bat-hw">
+
+    <label>Velocidad murciélago:</label>
+    <input type="range" min="0.5" max="3" step="0.1" value="1" data-attr="velocidad-bat-hw">
+
+
+    <label>Cantidad:</label>
+    <input type="range" min="10" max="150" value="60" data-attr="cantidad-hw">
+
+    <label>Tamaño:</label>
+    <input type="range" min="1" max="10" step="0.5" value="3" data-attr="tamano-hw">
+
+    <label>Velocidad:</label>
+    <input type="range" min="0.5" max="3" step="0.1" value="1" data-attr="velocidad-hw">
+
+    <label>Opacidad:</label>
+    <input type="range" min="0.1" max="1" step="0.1" value="0.8" data-attr="opacidad-hw">
+  </div>
+
+  <button class="copy-btn">Copiar código</button>
+  <small>Evento Halloween</small>
+</div>
+
+<style>
+.switch {
+  position:relative;
+  display:inline-block;
+  width:50px;
+  height:26px;
+  margin:6px 0;
+}
+.switch input {display:none;}
+.slider {
+  position:absolute;
+  cursor:pointer;
+  top:0; left:0; right:0; bottom:0;
+  background-color:#ccc;
+  transition:.4s;
+  border-radius:26px;
+}
+.slider:before {
+  position:absolute;
+  content:"";
+  height:20px; width:20px;
+  left:3px; bottom:3px;
+  background-color:white;
+  transition:.4s;
+  border-radius:50%;
+}
+input:checked + .slider {
+  background-color:#ff6600;
+}
+input:checked + .slider:before {
+  transform:translateX(24px);
+}
+</style>
+
+<script>
+const cardHW = document.querySelector('[data-name="menutech-halloween"]');
+const previewHW = cardHW.querySelector("menutech-halloween");
+const popupFieldsHW = cardHW.querySelector(".popup-fields-hw");
+
+// Actualización en tiempo real
+cardHW.querySelectorAll("[data-attr]").forEach(input => {
+  input.addEventListener("input", e => {
+    const attr = e.target.dataset.attr;
+    if (e.target.type === "file" && e.target.files[0]) {
+      const url = URL.createObjectURL(e.target.files[0]);
+      previewHW.setAttribute(attr, url);
+    } else if (e.target.type === "checkbox") {
+      previewHW.setAttribute(attr, e.target.checked ? "true" : "false");
+      popupFieldsHW.style.display = e.target.checked ? "block" : "none";
+    } else {
+      previewHW.setAttribute(attr, e.target.value);
+    }
+  });
+});
+
+// ======= COMPONENTE FUNCIONAL =======
+class MenutechHalloween extends HTMLElement {
+  static get observedAttributes() {
+    return [
+      "color-hw","cantidad-hw","tamano-hw","velocidad-hw","opacidad-hw",
+      "popup-activo-hw","popup-image-hw","popup-link-hw","popup-color-hw",
+      "fecha-inicio-hw","fecha-fin-hw", "tamano-pumpkin-hw", "tamano-bat-hw", 
+      "velocidad-bat-hw"
+
+    ];
+  }
+
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+    this.renderHW();
+  }
+
+  attributeChangedCallback() {
+    this.renderHW();
+  }
+
+  renderHW() {
+    const color = this.getAttribute("color-hw") || "#ff6600";
+    const cantidad = parseInt(this.getAttribute("cantidad-hw")) || 60;
+    const tamano = parseFloat(this.getAttribute("tamano-hw")) || 3;
+    const velocidad = parseFloat(this.getAttribute("velocidad-hw")) || 1;
+    const opacidad = parseFloat(this.getAttribute("opacidad-hw")) || 0.8;
+    const popupActivo = this.getAttribute("popup-activo-hw") === "true";
+    const popupImage = this.getAttribute("popup-image-hw") || "";
+    const popupLink = this.getAttribute("popup-link-hw") || "";
+    const popupColor = this.getAttribute("popup-color-hw") || "#ff6600";
+    const fechaInicio = this.getAttribute("fecha-inicio-hw") || "2025-10-31";
+    const fechaFin = this.getAttribute("fecha-fin-hw") || "2025-10-31";
+    const tamanoPumpkin = parseFloat(this.getAttribute("tamano-pumpkin-hw")) || 60;
+    const tamanoBat = parseFloat(this.getAttribute("tamano-bat-hw")) || 50;
+    const velocidadBat = parseFloat(this.getAttribute("velocidad-bat-hw")) || 1;
+
+
+    const hoy = new Date();
+    const enEditor = this.closest('.preview') !== null;
+
+    const inicio = new Date(fechaInicio);
+    const fin = new Date(fechaFin);
+    const halloween = new Date(hoy.getFullYear(), 9, 31);
+    const fechasPorDefecto =
+      fechaInicio === "2025-10-31" && fechaFin === "2025-10-31";
+
+    let activo = false;
+    if (enEditor) {
+      activo = true;
+    } else if (fechasPorDefecto) {
+      activo = hoy.toDateString() === halloween.toDateString();
+    } else {
+      activo = hoy >= inicio && hoy <= fin;
+    }
+
+    // Partículas
+    let dots = "";
+    if (activo && enEditor) {
+      const particleImages = [
+        "https://menutechdeveloper.github.io/libreria/hw1.png",
+        "https://menutechdeveloper.github.io/libreria/hw2.png",
+        "https://menutechdeveloper.github.io/libreria/hw3.png"
+      ];
+      for (let i = 0; i < cantidad; i++) {
+        const x = Math.random() * 100;
+        const y = Math.random() * 100;
+        const size = tamano + Math.random() * tamano;
+        const dur = 4 + Math.random() * 3;
+        const delay = Math.random() * 2;
+        const img = particleImages[i % particleImages.length];
+        dots += `
+          <div class="flake" style="
+            left:${x}%;
+            top:${y}%;
+            width:${size*2}px;
+            height:${size*2}px;
+            animation-duration:${dur / velocidad}s;
+            animation-delay:${delay}s;
+            opacity:${opacidad};
+            background-image:url('${img}');
+            background-size:contain;
+            background-repeat:no-repeat;
+            background-position:center;
+          "></div>`;
+      }
+    }
+
+    this.shadowRoot.innerHTML = `
+      <style>
+        :host {
+          position:relative;
+          display:block;
+          width:100%;
+          height:100%;
+          overflow:hidden;
+          pointer-events:none;
+          z-index:1;
+          background:white;
+        }
+
+        /* HUMO DE FONDO */
+        .smoke-layer {
+          position:absolute;
+          top:0; left:0;
+          width:100%; height:100%;
+          background-image:url("https://menutechdeveloper.github.io/libreria/smoke2.png");
+          background-repeat:repeat;
+          background-size:cover;
+          opacity:0.5;
+          animation:moveSmoke 40s linear infinite;
+          filter:blur(4px);
+          z-index:0;
+        }
+        @keyframes moveSmoke {
+          0% { background-position:0 0; }
+          100% { background-position:2000px 1000px; }
+        }
+
+        .flake {
+          position:absolute;
+          animation:fall linear infinite;
+          will-change: transform, opacity;
+        }
+        @keyframes fall {
+          0% { transform:translateY(0) rotate(0deg); opacity:1; }
+          100% { transform:translateY(100%) rotate(360deg); opacity:0; }
+        }
+
+        /* CALABAZAS ILUMINADAS */
+        .pumpkin-layer {
+          position:absolute;
+          inset:0;
+          pointer-events:none;
+          overflow:hidden;
+          z-index:2;
+        }
+        .pumpkin {
+          position:absolute;
+          width:60px;
+          height:60px;
+          background-image:url("https://menutechdeveloper.github.io/libreria/calabaza.gif");
+          background-size:contain;
+          background-repeat:no-repeat;
+          opacity:0;
+          transform:scale(0.5);
+          filter:drop-shadow(0 0 15px #ff6600);
+          animation:appear 2s ease-out forwards;
+        }
+        @keyframes appear {
+          0% { opacity:0; transform:scale(0.3) rotate(-10deg); }
+          40% { opacity:1; transform:scale(1.1) rotate(5deg); }
+          100% { opacity:1; transform:scale(1) rotate(0deg); }
+        }
+        .pumpkin.fade-out {
+          animation:disappear 2s ease-in forwards;
+        }
+        @keyframes disappear {
+          0% { opacity:1; transform:scale(1); }
+          100% { opacity:0; transform:scale(0.3); }
+        }
+
+        /* POPUP */
+        .popup-overlay {
+          position:fixed;
+          top:0; left:0;
+          width:100%; height:100%;
+          background:rgba(0,0,0,0.5);
+          display:${popupActivo && activo ? "flex" : "none"};
+          justify-content:center;
+          align-items:center;
+          pointer-events:auto;
+          z-index:10000;
+        }
+        .popup-content {
+          position:relative;
+          background:#fff;
+          max-width:90%;
+          max-height:80%;
+          border-radius:12px;
+          box-shadow:0 4px 20px rgba(0,0,0,0.3);
+          padding:20px;
+          text-align:center;
+          display:flex;
+          flex-direction:column;
+          gap:12px;
+          overflow:hidden;
+        }
+        .popup-content img {
+          max-width:100%;
+          max-height:60vh;
+          border-radius:8px;
+          object-fit:contain;
+        }
+        .popup-content button {
+          background:${popupColor};
+          color:#fff;
+          border:none;
+          padding:10px 16px;
+          border-radius:6px;
+          cursor:pointer;
+          font-size:1rem;
+        }
+        .popup-close {
+          position:absolute;
+          top:10px; right:10px;
+          background:transparent;
+          border:none;
+          font-size:1.5rem;
+          cursor:pointer;
+          color:#333;
+        }
+          /* MURCIÉLAGOS */
+        .bat-layer {
+          position:absolute;
+          inset:0;
+          pointer-events:none;
+          overflow:hidden;
+          z-index:3;
+        }
+        .bat {
+          position:absolute;
+          background-image:url("https://menutechdeveloper.github.io/libreria/murcielago.gif");
+          background-size:contain;
+          background-repeat:no-repeat;
+          background-position:center;
+          animation:flyBat linear infinite;
+        }
+        @keyframes flyBat {
+          0% { left:-100px; }
+          100% { left:100vw; }
+        }
+
+      </style>
+
+      ${activo ? `<div class="smoke-layer"></div>` : ""}
+      ${dots}
+      ${activo ? `<div class="pumpkin-layer"></div>` : ""}
+      ${activo ? `<div class="bat-layer"></div>` : ""}
+
+      <div class="popup-overlay">
+        <div class="popup-content">
+          <button class="popup-close">&times;</button>
+          ${popupImage ? `<img src="${popupImage}" alt="Promoción">` : ""}
+          ${popupLink ? `<button onclick="window.open('${popupLink}','_blank')">Ver promoción</button>` : ""}
+        </div>
+      </div>
+    `;
+
+    // Lógica popup
+    const overlay = this.shadowRoot.querySelector(".popup-overlay");
+    const closeBtn = this.shadowRoot.querySelector(".popup-close");
+    if (overlay && closeBtn) {
+      closeBtn.onclick = () => overlay.style.display = "none";
+      overlay.onclick = (e) => { if(e.target === overlay) overlay.style.display = "none"; };
+    }
+
+    // === CALABAZAS ALEATORIAS ===
+    if (activo) {
+      const layer = this.shadowRoot.querySelector(".pumpkin-layer");
+      if (layer) {
+        const spawnPumpkin = () => {
+          const pumpkin = document.createElement("div");
+          pumpkin.classList.add("pumpkin");
+          pumpkin.style.left = `${Math.random() * 100}%`;
+          pumpkin.style.top = `${Math.random() * 100}%`;
+
+          pumpkin.style.width = `${tamanoPumpkin}px`;
+          pumpkin.style.height = `${tamanoPumpkin}px`;
+
+          layer.appendChild(pumpkin);
+          setTimeout(() => {
+            pumpkin.classList.add("fade-out");
+            setTimeout(() => pumpkin.remove(), 2000);
+          }, 3000 + Math.random() * 3000);
+        };
+        clearInterval(this._pumpkinInterval);
+        this._pumpkinInterval = setInterval(() => {
+          if (Math.random() > 0.4) spawnPumpkin();
+        }, 1200);
+      }
+    }
+  }
+  // === MURCIÉLAGOS ALEATORIOS ===
+if (activo) {
+  const batLayer = this.shadowRoot.querySelector(".bat-layer");
+  if (batLayer) {
+    batLayer.innerHTML = "";
+    const batCount = 6;
+    for (let i = 0; i < batCount; i++) {
+      const bat = document.createElement("div");
+      bat.classList.add("bat");
+      bat.style.top = `${Math.random() * 80}%`;
+      bat.style.width = `${tamanoBat}px`;
+      bat.style.height = `${tamanoBat}px`;
+      const duration = (15 + Math.random() * 5) / velocidadBat;
+      bat.style.animationDuration = `${duration}s`;
+      bat.style.animationDelay = `${Math.random() * 5}s`;
+      batLayer.appendChild(bat);
+    }
+  }
+}
+}
+
+customElements.define("menutech-halloween", MenutechHalloween);
+</script>
+
+<!--=================================================================================================================================-->
+<!--MENUTECH HALLOWEEN-->
+<!--=================================================================================================================================-->
+
 
     <!-- MENUTECH PARTICLES -->
     <div class="component-card" data-name="menutech-particles" data-type="visual">

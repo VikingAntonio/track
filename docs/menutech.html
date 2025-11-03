@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Grid 3x con animaciones y enlaces</title>
+<style>
+  :root{
+    --max-width: 1200px;
+    --padding-page: clamp(12px, 2.5vw, 32px);
+    --gap: clamp(8px, 1.5vw, 24px);
+    --card-radius: 14px;
+    --bg: #f5f6fa;
+    --card-bg: #fff;
+    --shadow: 0 6px 18px rgba(20,20,30,0.06);
+    --shadow-hover: 0 12px 28px rgba(20,20,30,0.12);
+    --transition-fast: 0.3s ease;
+    --transition-slow: 0.6s ease;
+    --overlay-color: rgba(0,0,0,0.45);
+  }
+
+  html,body{
+    margin:0;
+    height:100%;
+    background:var(--bg);
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+
+  .page {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: var(--padding-page);
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--gap);
+    align-items: stretch;
+  }
+
+  /* CARD */
+  .card {
+    background: var(--card-bg);
+    border-radius: var(--card-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 0.8s var(--transition-slow) forwards;
+    text-decoration: none; /* por si es interactuable */
+    color: inherit;
+  }
+
+  .card:focus {
+    outline: 3px solid rgba(59,130,246,0.25);
+    outline-offset: 6px;
+  }
+
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  .media-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: linear-gradient(180deg,#eee,#f6f6f6);
+    overflow: hidden;
+  }
+
+  .media-wrapper img,
+  .media-wrapper video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-slow);
+  }
+
+  .card:hover .media-wrapper img,
+  .card:hover .media-wrapper video {
+    transform: scale(1.07);
+  }
+
+  /* Overlay con efecto de fade */
+  .overlay {
+    position: absolute;
+    inset: 0;
+    background: var(--overlay-color);
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    pointer-events:none; /* para no bloquear el clic de la tarjeta */
+  }
+
+  .overlay h3 {
+    color: #fff;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transform: translateY(10px);
+    opacity: 0;
+    transition: all var(--transition-fast);
+  }
+
+  .card:hover .overlay {
+    opacity: 1;
+  }
+
+  .card:hover .overlay h3 {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .card-content {
+    padding: clamp(10px,1.2vw,14px);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .title {
+    font-size: 0.95rem;
+    margin:0;
+    color:#111;
+  }
+
+  .subtitle {
+    font-size: 0.8rem;
+    color:#666;
+    margin:0;
+  }
+
+  /* Mobile tweaks */
+  @media (max-width:420px){
+    :root{ --gap: 8px; --padding-page: 10px; }
+    .title{ font-size:0.85rem; }
+    .subtitle{ font-size:0.75rem; }
+  }
+</style>
+</head>
+<body>
+  <main class="page">
+    <h2 style="margin:0 0 14px 0; font-weight:600;">Galería con Animaciones y Enlaces</h2>
+
+    <div class="grid-3">
+      <!-- Cada article puede tener data-href y opcional data-target ("_blank" para abrir en nueva pestaña) -->
+      <article class="card" data-href="https://menutech.biz/menutechfm3" data-target="_self" tabindex="0" role="link" aria-label="Ir a página 1">
+        <div class="media-wrapper">
+          <video playsinline muted autoplay loop preload="metadata" poster="https://via.placeholder.com/1280x720?text=Video+1">
+            <source src="ruta/a/tu-video1.mp4" type="video/mp4" />
+          </video>
+          <div class="overlay"><h3>See more</h3></div>
+        </div>
+        <div class="card-content">
+          <div>
+            <p class="title">Templates</p>
+            <p class="subtitle">Design your deluxe website</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" data-href="https://menutech.biz/menutechfm3" data-target="_self" tabindex="0" role="link" aria-label="Ir a página 2">
+        <div class="media-wrapper">
+          <img src="https://via.placeholder.com/1280x720?text=Imagen+2" alt="Imagen 2" />
+          <div class="overlay"><h3>See more</h3></div>
+        </div>
+        <div class="card-content">
+          <div>
+            <p class="title">&lt; programming /&gt;</p>
+            <p class="subtitle">Advanced web components with Menutech</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" data-href="https://menutech.biz/editortshirt" data-target="_self" tabindex="0" role="link" aria-label="Ir a página 3">
+        <div class="media-wrapper">
+          <video playsinline muted autoplay loop preload="metadata" poster="https://via.placeholder.com/1280x720?text=Video+3">
+            <source src="ruta/a/tu-video3.mp4" type="video/mp4" />
+          </video>
+          <div class="overlay"><h3>See more</h3></div>
+        </div>
+        <div class="card-content">
+          <div>
+            <p class="title">3D Marketing kit</p>
+            <p class="subtitle">Interactive 3D product showcase</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Row 2 -->
+      <article class="card" data-href="https://ejemplo.com/pagina4" data-target="_self" tabindex="0" role="link" aria-label="Ir a página 4">
+        <div class="media-wrapper">
+          <img src="https://via.placeholder.com/1280x720?text=Imagen+4" alt="Imagen 4" />
+          <div class="overlay"><h3>See more</h3></div>
+        </div>
+        <div class="card-content">
+          <div>
+            <p class="title">Icons</p>
+            <p class="subtitle"></p>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" data-href="https://ejemplo.com/pagina5" data-target="_self" tabindex="0" role="link" aria-label="Ir a página 5">
+        <div class="media-wrapper">
+          <video playsinline muted autoplay loop preload="metadata" poster="https://via.placeholder.com/1280x720?text=Video+5">
+            <source src="ruta/a/tu-video5.mp4" type="video/mp4" />
+          </video>
+          <div class="overlay"><h3>See more</h3></div>
+        </div>
+        <div class="card-content">
+          <div>
+            <p class="title">Events</p>
+            <p class="subtitle"></p>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" data-href="https://ejemplo.com/pagina6" data-target="_self" tabindex="0" role="link" aria-label="Ir a página 6">
+        <div class="media-wrapper">
+          <img src="https://via.placeholder.com/1280x720?text=Imagen+6" alt="Imagen 6" />
+          <div class="overlay"><h3>See more</h3></div>
+        </div>
+        <div class="card-content">
+          <div>
+            <p class="title"></p>
+            <p class="subtitle"></p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Row 3 -->
+      <article class="card" data-href="https://ejemplo.com/pagina7" data-target="_self" tabindex="0" role="link" aria-label="Ir a página 7">
+        <div class="media-wrapper">
+          <video playsinline muted autoplay loop preload="metadata" poster="https://via.placeholder.com/1280x720?text=Video+7">
+            <source src="ruta/a/tu-video7.mp4" type="video/mp4" />
+          </video>
+          <div class="overlay"><h3>See more</h3></div>
+        </div>
+        <div class="card-content">
+          <div>
+            <p class="title"></p>
+            <p class="subtitle"></p>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" data-href="https://ejemplo.com/pagina8" data-target="_self" tabindex="0" role="link" aria-label="Ir a página 8">
+        <div class="media-wrapper">
+          <img src="https://via.placeholder.com/1280x720?text=Imagen+8" alt="Imagen 8" />
+          <div class="overlay"><h3>See more</h3></div>
+        </div>
+        <div class="card-content">
+          <div>
+            <p class="title"></p>
+            <p class="subtitle"></p>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" data-href="https://ejemplo.com/pagina9" data-target="_self" tabindex="0" role="link" aria-label="Ir a página 9">
+        <div class="media-wrapper">
+          <img src="https://via.placeholder.com/1280x720?text=Imagen+9" alt="Imagen 9" />
+          <div class="overlay"><h3>See more</h3></div>
+        </div>
+        <div class="card-content">
+          <div>
+            <p class="title"></p>
+            <p class="subtitle"></p>
+          </div>
+        </div>
+      </article>
+    </div>
+  </main>
+
+<script>
+  // Forzar reproducción en móviles (compatibilidad)
+  document.addEventListener('DOMContentLoaded', ()=> {
+    const vids = Array.from(document.querySelectorAll('video'));
+    vids.forEach(v => {
+      v.muted = true;
+      v.playsInline = true;
+      const p = v.play();
+      if (p && typeof p.then === 'function') {
+        p.catch(()=>{});
+      }
+    });
+
+    // --- Añadimos comportamiento de enlaces a las tarjetas ---
+    const cards = Array.from(document.querySelectorAll('.card[data-href]'));
+    cards.forEach(card => {
+      const href = card.getAttribute('data-href');
+      const target = card.getAttribute('data-target') || '_self'; // usa _blank para nueva pestaña
+      // Click normal
+      card.addEventListener('click', (e) => {
+        // permite que clicks en elementos interactivos internos no sobrescriban (ej. si en el futuro agregas botones)
+        const interactive = e.target.closest('a,button,input,textarea,select,svg,button');
+        if (interactive) return;
+        if (!href) return;
+        if (target === '_blank') {
+          window.open(href, '_blank');
+        } else {
+          window.location.href = href;
+        }
+      });
+      // Soporte teclado: Enter / Space activan el link
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          if (!href) return;
+          if (target === '_blank') {
+            window.open(href, '_blank');
+          } else {
+            window.location.href = href;
+          }
+        }
+      });
+
+    });
+  });
+</script>
+</body>
+</html>

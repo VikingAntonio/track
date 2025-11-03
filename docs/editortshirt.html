@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Menutech - Custom Tshirt</title>
+
+  <!-- Librerías -->
+  <script src="https://cdn.jsdelivr.net/npm/fabric@5.3.0/dist/fabric.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- ✅ Solo View3D (ya incluye Three.js) -->
+  <script src="https://unpkg.com/@egjs/view3d@latest/dist/view3d.pkgd.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/@egjs/view3d@latest/css/view3d-bundle.min.css">
+
+  <style>
+    body {
+      margin: 0;
+      background: #f3f3f3;
+      font-family: "Inter", sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+    }
+    h1 { margin: 20px 0; color: #111; }
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+      width: 90%;
+      max-width: 1300px;
+      gap: 20px;
+      flex: 1;
+      margin-bottom: 30px;
+    }
+    .panel {
+      flex: 1;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    h2 { margin-top: 0; color: #333; font-size: 20px; }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    button, input, select {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid #bbb;
+      background: #333;
+      color: #fff;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover { background: #555; }
+    input[type="file"], select, input[type="color"] {
+      background: #fff;
+      color: #000;
+      border: 1px solid #ccc;
+    }
+    #designer {
+      width: 100%;
+      height: 100%;
+      border: 1px dashed #ccc;
+      border-radius: 8px;
+      background: #fff;
+      flex: 1;
+    }
+    #view3d {
+      width: 100%;
+      height: 100%;
+      border-radius: 10px;
+      background: #111;
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+    .v3d-loader {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
+      height: 6px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 3px;
+    }
+    .v3d-loader-progress {
+      height: 100%;
+      background: #00bcd4;
+      width: 0%;
+      border-radius: 3px;
+      transition: width 0.2s;
+    }
+    p { font-size: 12px; color: #666; margin-top: 6px; }
+    @media (max-width: 900px) {
+      .container { flex-direction: column; }
+      #designer, #view3d { height: 400px; }
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Menutech - Custom Tshirt</h1>
+
+  <div class="container">
+    <!-- PANEL IZQUIERDO -->
+    <div class="panel">
+      <h2>Vista 2D</h2>
+      <div class="controls">
+        <input id="fileImg" type="file" accept="image/*">
+        <button id="addText">Agregar texto</button>
+        <input id="colorPicker" type="color" value="#ffffff" title="Color de fondo">
+        <select id="fontSelect">
+          <option value="Arial">Arial</option>
+          <option value="Helvetica">Helvetica</option>
+          <option value="Georgia">Georgia</option>
+          <option value="Impact">Impact</option>
+        </select>
+        <button id="bringFront">⬆️ Frente</button>
+        <button id="sendBack">⬇️ Atrás</button>
+        <button id="flipX">↔️ Voltear</button>
+        <button id="downloadDTF">📥 PNG</button>
+        <button id="downloadPDF">📄 PDF</button>
+      </div>
+
+      <canvas id="designer" width="512" height="512"></canvas>
+      <p><code></code>.</p>
+    </div>
+
+    <!-- PANEL DERECHO -->
+    <div class="panel">
+      <h2>Vista 3D</h2>
+      <div id="view3d">
+        <canvas class="view3d-canvas"></canvas>
+        <div class="v3d-loader">
+          <div class="v3d-loader-progress"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer style="padding:10px;color:#777;font-size:13px;">
+    @menutech 2025
+  </footer>
+
+<script>
+  // 🔧 Fix Fabric baseline bug
+  const originalSet = fabric.Text.prototype._set;
+  fabric.Text.prototype._set = function(key, value) {
+    if (key === 'textBaseline' && value === 'alphabetical') return;
+    return originalSet.call(this, key, value);
+  };
+
+  const { jsPDF } = window.jspdf;
+  const fabricCanvas = new fabric.Canvas('designer', { preserveObjectStacking: true });
+
+  // Fondo inicial
+  const PLANTILLA_GUIA = "./plantilla.png";
+  fabricCanvas.setBackgroundColor('#ffffff', fabricCanvas.renderAll.bind(fabricCanvas));
+  fabric.Image.fromURL(PLANTILLA_GUIA, img => {
+    img.scaleToWidth(fabricCanvas.width);
+    img.set({ selectable: false, evented: false });
+    fabricCanvas.setBackgroundImage(img, fabricCanvas.renderAll.bind(fabricCanvas));
+  }, { crossOrigin: 'anonymous' });
+
+  // === Funcionalidad 2D ===
+  document.getElementById('fileImg').addEventListener('change', e=>{
+    const f = e.target.files[0]; if(!f) return;
+    const reader = new FileReader();
+    reader.onload = ev=>{
+      fabric.Image.fromURL(ev.target.result, img=>{
+        img.set({ left: 150, top: 150, cornerStyle: 'circle' });
+        img.scaleToWidth(200);
+        fabricCanvas.add(img).setActiveObject(img);
+        fabricCanvas.requestRenderAll();
+      });
+    };
+    reader.readAsDataURL(f);
+  });
+
+  document.getElementById('addText').addEventListener('click', ()=>{
+    const txt = new fabric.IText('Tu texto', { left: 100, top: 100, fontSize: 40, fill:'#000' });
+    fabricCanvas.add(txt).setActiveObject(txt);
+  });
+
+  document.getElementById('bringFront').addEventListener('click', ()=>{
+    const a = fabricCanvas.getActiveObject(); if(a) a.bringToFront();
+  });
+
+  document.getElementById('sendBack').addEventListener('click', ()=>{
+    const a = fabricCanvas.getActiveObject(); if(a) a.sendToBack();
+  });
+
+  document.getElementById('flipX').addEventListener('click', ()=>{
+    const a = fabricCanvas.getActiveObject();
+    if(a) { a.flipX = !a.flipX; fabricCanvas.requestRenderAll(); }
+  });
+
+  document.getElementById('colorPicker').addEventListener('input', e=>{
+    fabricCanvas.setBackgroundColor(e.target.value, fabricCanvas.renderAll.bind(fabricCanvas));
+  });
+
+  document.getElementById('fontSelect').addEventListener('change', e=>{
+    const a = fabricCanvas.getActiveObject();
+    if(a && a.set) { a.set('fontFamily', e.target.value); fabricCanvas.requestRenderAll(); }
+  });
+
+  document.getElementById('downloadDTF').addEventListener('click', ()=>{
+    const dataUrl = fabricCanvas.toDataURL({ format: 'png', multiplier: 2 });
+    const a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = 'design.png';
+    a.click();
+  });
+
+  document.getElementById('downloadPDF').addEventListener('click', ()=>{
+    const pdf = new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const img = fabricCanvas.toDataURL({format:'png',multiplier:1});
+    pdf.text('Diseño de Camiseta',10,10);
+    pdf.addImage(img,'PNG',10,20,180,180);
+    pdf.save('diseño.pdf');
+  });
+
+  /* ✅ VIEW3D CONFIGURACIÓN */
+  const view3D = new View3D("#view3d", { 
+    src: "./shirt.gltf",
+    poster: "https://menutechdeveloper.github.io/bddImg/assets/img/postershirt.jpg",
+    autoInit: true,
+  });
+
+  // Loader visual
+ view3D.on("load", async () => {
+  console.log("✅ Modelo 3D cargado completamente");
+
+  // Esperar hasta que THREE esté disponible
+  const waitForThree = () => new Promise(resolve => {
+    const check = () => {
+      if (view3D?.renderer?.three) return resolve(view3D.renderer.three);
+      setTimeout(check, 100);
+    };
+    check();
+  });
+
+  const THREE = await waitForThree();
+  console.log("🧱 THREE.js disponible:", THREE ? "✅" : "❌");
+
+  let targetMaterial = null;
+  const materials = new Set();
+
+  // Recorrer el modelo y mostrar materiales detectados
+  view3D.model?.traverse(obj => {
+    if (obj.isMesh && obj.material) {
+      const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
+      mats.forEach(m => materials.add(m));
+    }
+  });
+
+  console.log("🧱 Materiales detectados en el modelo:");
+  materials.forEach(m => console.log("•", m.name));
+
+  // Buscar material que contenga "dynamictexture"
+  for (const mat of materials) {
+    if (mat.name.toLowerCase().includes("dynamictexture")) {
+      targetMaterial = mat;
+      console.log("🎯 Material encontrado:", mat.name);
+      break;
+    }
+  }
+
+  if (!targetMaterial) {
+    console.warn("⚠️ No se encontró 'DynamicTexture', se usará el primer material.");
+    targetMaterial = [...materials][0];
+  }
+
+  if (!targetMaterial) return console.error("❌ No hay materiales válidos en el modelo.");
+
+  // ✅ Crear textura dinámica desde el canvas
+  const texture = new THREE.CanvasTexture(fabricCanvas.lowerCanvasEl);
+  texture.flipY = false;
+  texture.encoding = THREE.sRGBEncoding;
+  texture.needsUpdate = true;
+
+  // Asignar textura
+  targetMaterial.map = texture;
+  targetMaterial.color.set("#ffffff");
+  targetMaterial.needsUpdate = true;
+
+  // 🔄 Actualizar en tiempo real
+  fabricCanvas.on("after:render", () => {
+    texture.needsUpdate = true;
+  });
+
+  console.log("🖼️ Textura dinámica aplicada a:", targetMaterial.name);
+});
+
+
+
+</script>
+
+</body>
+</html>

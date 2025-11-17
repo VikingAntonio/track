@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Custom Button Editor — Restaurantes</title>
+<title>Custom Button</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap" rel="stylesheet">
-<script src="https://menutechdeveloper.github.io/libreria/menutechlibrary.js"></script>
+<script src="https://menutech.xyz/menutechUI.min.js"></script>
 <style>
 :root{
   --bg-page:#0f0f10;
@@ -201,7 +201,7 @@ document.querySelectorAll('.toggle-anim').forEach(cb=>{
 });
 
 function loadMenuTechIcon(el,color){
-  fetch("https://menutechdeveloper.github.io/libreria/icons/mago.svg")
+  fetch("https://menutech.xyz/icons/mago.svg")
     .then(r=>r.text())
     .then(svg=>{
       svg=svg.replace(/fill="[^"]*"/g,'fill="currentColor"');

@@ -440,6 +440,7 @@ generate.onclick = ()=>{
 
   // Habilitar descarga
   download.disabled = false;
+  showPopup("QR generado correctamente");
 };
 download.onclick = () => {
   if (!realQR) {
@@ -451,6 +452,7 @@ download.onclick = () => {
     name: "QR",
     extension: "png"
   });
+  showPopup("QR descargado correctamente");
 };
 
 
@@ -458,3 +460,4 @@ download.onclick = () => {
 <script src="https://menutech.xyz/menutechUI.min.js"></script>
 </body>
 </html>
+

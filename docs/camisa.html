@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Editor 3D</title>
+
+  <!-- View3D (REQUIERE canvas dentro del DIV) -->
+  <script src="https://unpkg.com/@egjs/view3d/dist/view3d.pkgd.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/@egjs/view3d/css/view3d-bundle.min.css">
+
+  <style>
+    body { font-family: sans-serif; padding: 10px; }
+    #view3d { width: 600px; height: 500px; background: #ddd; }
+    #dropZone {
+      width: 300px; padding: 20px; border: 2px dashed #aaa;
+      margin-top: 20px; text-align: center; cursor: pointer;
+    }
+    #previewImg { width: 300px; margin-top: 10px; display: none; }
+  </style>
+</head>
+
+<body>
+
+  <h2>Modelo 3D</h2>
+
+  <!-- 🔥 OBLIGATORIO: canvas dentro del contenedor 🔥 -->
+  <div id="view3d">
+    <canvas></canvas>
+  </div>
+
+  <h3>Cargar PNG</h3>
+
+  <div id="dropZone">Arrastra una imagen o haz clic</div>
+  <input id="fileInput" type="file" accept="image/*" style="display:none">
+
+  <img id="previewImg">
+
+  <br><br>
+  <h3>Material que usa dynamicTexture.png</h3>
+  <select id="materialSelect">
+    <option value="__all__">Todos</option>
+  </select>
+
+  <script>
+    let modelRoot = null;
+    let targetMaterials = [];
+
+    // Inicializar visor
+    const viewer = new View3D("#view3d", {
+      src: "./shirt.gltf",
+      poster: "./postershirt.jpg",
+      autoInit: true
+    });
+
+    // Cuando el modelo ya está listo
+    viewer.on("modelChange", e => {
+      modelRoot = e.model;
+      modelRoot.scale.set(3, 3, 3);
+
+      const select = document.getElementById("materialSelect");
+
+      modelRoot.traverse(obj => {
+        if (obj.isMesh && obj.material) {
+
+          const processMat = mat => {
+            // Solo añadimos los materiales que usan dynamicTexture.png
+            if (mat.map && mat.map.name && mat.map.name.includes("dynamicTexture")) {
+
+              targetMaterials.push(mat);
+
+              const opt = document.createElement("option");
+              opt.value = mat.uuid;
+              opt.textContent = mat.name || "Material con dynamicTexture";
+              select.appendChild(opt);
+            }
+          };
+
+          if (Array.isArray(obj.material)) {
+            obj.material.forEach(processMat);
+          } else {
+            processMat(obj.material);
+          }
+        }
+      });
+    });
+
+    // DRAG & DROP + input
+    const dropZone = document.getElementById("dropZone");
+    const fileInput = document.getElementById("fileInput");
+    const previewImg = document.getElementById("previewImg");
+
+    dropZone.onclick = () => fileInput.click();
+    dropZone.ondragover = e => { e.preventDefault(); dropZone.style.background = "#eee"; };
+    dropZone.ondragleave = () => dropZone.style.background = "";
+    dropZone.ondrop = e => {
+      e.preventDefault();
+      dropZone.style.background = "";
+      handleFile(e.dataTransfer.files[0]);
+    };
+    fileInput.onchange = e => handleFile(e.target.files[0]);
+
+
+    function handleFile(file) {
+      if (!file || !file.type.startsWith("image/")) {
+        alert("Debes subir un PNG o JPG");
+        return;
+      }
+
+      const url = URL.createObjectURL(file);
+      previewImg.src = url;
+      previewImg.style.display = "block";
+
+      applyTexture(url);
+    }
+
+
+    // APLICAR TEXTURA A LOS MATERIALES QUE USABAN dynamicTexture.png
+    function applyTexture(url) {
+      const matSelected = document.getElementById("materialSelect").value;
+
+      const loader = new THREE.TextureLoader();
+      loader.load(url, tex => {
+
+        tex.flipY = false;
+        tex.encoding = THREE.sRGBEncoding;
+
+        targetMaterials.forEach(mat => {
+          if (matSelected === "__all__" || mat.uuid === matSelected) {
+            mat.map = tex;
+            mat.needsUpdate = true;
+          }
+        });
+
+        console.log("Textura aplicada.");
+      });
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menutech Template Editor</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f0f2f5;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+#app-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+#logo {
+    position: fixed;
+    top: 30px;
+    left: 30px;
+    height: 120px;
+    z-index: 100;
+}
+
+#toolbar {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    z-index: 1000;
+    border: 1px solid #ccc;
+}
+
+#toolbar-header {
+    width: 100%;
+    padding: 5px;
+    text-align: center;
+    cursor: move;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    font-size: 14px;
+    color: #555;
+    user-select: none;
+}
+#toolbar-header i {
+    margin-right: 5px;
+}
+
+#toolbar .tool-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+}
+#toolbar .separator {
+    height: 1px;
+    width: 90%;
+    background-color: #e0e0e0;
+    margin: 0 auto;
+}
+
+.toolbar-button {
+    cursor: grab;
+}
+
+#editor-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px; /* Space for logo */
+}
+
+#canvas-container {
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    /* Width and height are now set by script */
+}
+
+#generate-btn {
+    padding: 12px 25px;
+}
+
+/* Other styles from before remain largely the same, but are included for completeness */
+.tool-group { display: flex; align-items: center; gap: 8px; }
+.toolbar-button { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 10px; border-radius: 5px; transition: background-color 0.2s; font-size: 11px; color: #333; }
+.toolbar-button:hover { background-color: #e9ecef; }
+.toolbar-button i { font-size: 16px; margin-bottom: 3px; }
+#font-family, #font-size { padding: 5px 7px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; }
+#font-size { width: 45px; }
+.color-controls { display: flex; align-items: center; gap: 5px; }
+.color-controls label { font-size: 13px; color: #555; }
+input[type="color"] { width: 26px; height: 26px; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; padding: 0; }
+#generate-btn { font-size: 15px; cursor: pointer; background-color: #f0ad4e; color: white; border: none; border-radius: 5px; transition: background-color 0.3s; }
+#generate-btn:hover { background-color: #c08533; }
+.popup-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); display: none; justify-content: center; align-items: center; z-index: 1000; }
+.popup-content { position: relative; background-color: #fff; padding: 40px; border-radius: 8px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+.close-btn { position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; color: #aaa; cursor: pointer; }
+.close-btn:hover { color: #333; }
+#next-step-btn {
+    background-color: #f0ad4e; /* Orange color */
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+#next-step-btn:hover {
+    background-color: #ec971f; /* Darker orange on hover */
+}
+
+    </style>
+</head>
+<body>
+    <div id="app-container">
+        <img src="https://menutech.services/assets/img/logomt.png" alt="Menutech Logo" id="logo">
+
+        <div id="toolbar">
+            <div id="toolbar-header">
+                <i class="fas fa-arrows-alt"></i> Tool Panel
+            </div>
+            <div class="tool-group">
+                <div id="add-text" class="toolbar-button" draggable="true" title="Drag to add Text">
+                    <i class="fas fa-font"></i>
+                    <span>Text</span>
+                </div>
+                <div id="add-image" class="toolbar-button" title="Drag an image from your computer onto the canvas">
+                    <i class="fas fa-image"></i>
+                    <span>Image</span>
+                </div>
+            </div>
+            <div class="tool-group separator"></div>
+            <div class="tool-group">
+                <select id="font-family" title="Font Family">
+                    <option>Arial</option>
+                    <option selected>Helvetica</option>
+                    <option>Times New Roman</option>
+                    <option>Georgia</option>
+                    <option>Verdana</option>
+                </select>
+                <input type="number" id="font-size" value="40" min="1" title="Font Size">
+            </div>
+            <div class="tool-group separator"></div>
+            <div class="tool-group color-controls">
+                <label for="text-color">Fill</label>
+                <input type="color" id="text-color" value="#000000" title="Text Color">
+                <label for="stroke-color">Stroke</label>
+                <input type="color" id="stroke-color" value="#ffffff" title="Stroke Color">
+            </div>
+        </div>
+        
+        <div id="editor-container">
+            <div id="canvas-container">
+                <canvas id="canvas"></canvas>
+            </div>
+            <button id="generate-btn">Generate Template</button>
+        </div>
+    </div>
+
+    <div id="popup" class="popup-container">
+        <div class="popup-content">
+            <span class="close-btn">&times;</span>
+            <h2>Template Generated!</h2>
+            <button id="next-step-btn">View in 3D & Prepare for Printing</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+    const canvasContainer = document.getElementById('canvas-container');
+    const canvas = new fabric.Canvas('canvas', {
+        width: 1, // Start with a minimal size
+        height: 1
+    });
+
+    // --- Make Toolbar Draggable ---
+    const toolbar = document.getElementById('toolbar');
+    const toolbarHeader = document.getElementById('toolbar-header');
+    let isDragging = false;
+    let offset = { x: 0, y: 0 };
+
+    toolbarHeader.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        offset.x = e.clientX - toolbar.offsetLeft;
+        offset.y = e.clientY - toolbar.offsetTop;
+        toolbar.style.cursor = 'grabbing';
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        toolbar.style.left = `${e.clientX - offset.x}px`;
+        toolbar.style.top = `${e.clientY - offset.y}px`;
+    });
+
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+        toolbar.style.cursor = 'default';
+    });
+
+    // --- Responsive Canvas Logic ---
+    const resizeCanvas = () => {
+        const editorContainer = document.getElementById('editor-container');
+        const generateBtn = document.getElementById('generate-btn');
+        
+        // Calculate available space, leaving room for logo, toolbar, and generate button
+        const topOffset = 80; // Approximate space for logo/toolbar
+        const bottomOffset = generateBtn.offsetHeight + 40; // Space for button + margin
+        
+        const availableWidth = window.innerWidth * 0.95;
+        const availableHeight = window.innerHeight - topOffset - bottomOffset;
+
+        // Determine the largest possible square size
+        const size = Math.min(availableWidth, availableHeight);
+
+        canvasContainer.style.width = `${size}px`;
+        canvasContainer.style.height = `${size}px`;
+        canvas.setWidth(size);
+        canvas.setHeight(size);
+
+        // Rescale background image
+        if (canvas.backgroundImage) {
+            const bgImg = canvas.backgroundImage;
+            bgImg.scaleToWidth(size);
+            bgImg.scaleToHeight(size);
+        }
+
+        canvas.renderAll();
+    };
+
+    // --- Canvas and Editor Logic ---
+    const generateBtn = document.getElementById('generate-btn');
+    const popup = document.getElementById('popup');
+    const closeBtn = document.querySelector('.close-btn');
+    const nextStepBtn = document.getElementById('next-step-btn');
+    const addTextBtn = document.getElementById('add-text');
+    const fontFamily = document.getElementById('font-family');
+    const fontSize = document.getElementById('font-size');
+    const textColor = document.getElementById('text-color');
+    const strokeColor = document.getElementById('stroke-color');
+
+    // Load the background image and set up resizing
+    fabric.Image.fromURL('cuadricula.png', (img) => {
+        canvas.setBackgroundImage(img, () => {
+            // Initial resize after image is loaded
+            resizeCanvas(); 
+            canvas.renderAll();
+        }, {
+            selectable: false,
+            evented: false,
+        });
+    });
+
+    window.addEventListener('resize', resizeCanvas);
+    
+    // --- Drag and Drop for Elements ---
+    addTextBtn.addEventListener('dragstart', (e) => e.dataTransfer.setData('type', 'text'));
+
+    canvasContainer.addEventListener('dragover', (e) => e.preventDefault());
+
+    canvasContainer.addEventListener('drop', (e) => {
+        e.preventDefault();
+        const pointer = canvas.getPointer(e);
+
+        if (e.dataTransfer.files.length > 0) {
+            const files = e.dataTransfer.files;
+            for (const file of files) {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (f) => {
+                        fabric.Image.fromURL(f.target.result, (img) => {
+                            img.set({ left: pointer.x, top: pointer.y });
+                            img.scaleToWidth(200);
+                            canvas.add(img);
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        } else {
+            const type = e.dataTransfer.getData('type');
+            if (type === 'text') {
+                const text = new fabric.IText('Your Text Here', {
+                    left: pointer.x, top: pointer.y,
+                    fontFamily: fontFamily.value, fontSize: parseInt(fontSize.value, 10),
+                    fill: textColor.value, stroke: strokeColor.value, strokeWidth: 1,
+                });
+                canvas.add(text);
+                canvas.setActiveObject(text);
+            }
+        }
+    });
+
+    // --- Keyboard and UI Controls ---
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Delete' || e.key === 'Backspace') {
+            const activeObject = canvas.getActiveObject();
+            if (activeObject && !activeObject.isEditing) {
+                canvas.remove(activeObject);
+            }
+        }
+    });
+
+    const updateTextProperties = () => {
+        const activeObject = canvas.getActiveObject();
+        if (activeObject && activeObject.type === 'i-text') {
+            activeObject.set({
+                fontFamily: fontFamily.value, fontSize: parseInt(fontSize.value, 10),
+                fill: textColor.value, stroke: strokeColor.value,
+            });
+            canvas.renderAll();
+        }
+    };
+
+    fontFamily.addEventListener('change', updateTextProperties);
+    fontSize.addEventListener('input', updateTextProperties);
+    textColor.addEventListener('input', updateTextProperties);
+    strokeColor.addEventListener('input', updateTextProperties);
+
+    // --- Export Logic ---
+    generateBtn.addEventListener('click', () => {
+        const originalBackgroundColor = canvas.backgroundColor;
+        canvas.backgroundColor = null; // Set background to transparent for export
+        canvas.backgroundImage = null; // Remove background image for export
+        
+        const currentSize = canvas.getWidth();
+        const dataURL = canvas.toDataURL({
+            format: 'png',
+            multiplier: 1200 / currentSize
+        });
+
+        // Restore background color and image
+        canvas.backgroundColor = originalBackgroundColor;
+        fabric.Image.fromURL('cuadricula.png', (img) => {
+            img.scaleToWidth(currentSize);
+            img.scaleToHeight(currentSize);
+            canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
+                selectable: false, evented: false,
+            });
+        });
+
+        const img = new Image();
+        img.src = dataURL;
+        img.onload = () => {
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = 1200;
+            tempCanvas.height = 1200;
+
+            // Ensure canvas is transparent before drawing
+            tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+            // Apply vertical flip ONLY
+            tempCtx.translate(0, tempCanvas.height);
+            tempCtx.scale(1, -1);
+            tempCtx.drawImage(img, 0, 0);
+
+            const link = document.createElement('a');
+            link.href = tempCanvas.toDataURL('image/png');
+            link.download = 'template.png';
+            link.click();
+
+            popup.style.display = 'flex';
+        };
+    });
+
+    closeBtn.addEventListener('click', () => popup.style.display = 'none');
+    nextStepBtn.addEventListener('click', () => {
+        window.location.href = 'https://menutech.biz/createtshirt';
+    });
+});
+
+    </script>
+</body>
+</html>

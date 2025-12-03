@@ -1,86 +1,150 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shirt Customizer</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+<!DOCTYPE html> 
+<html lang="en"> 
+<head> 
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>Shirt Customizer</title> 
+    <style> 
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap'); 
+ 
+body, html { 
+    margin: 0; 
+    padding: 0; 
+    width: 100%; 
+    height: 100%; 
+    font-family: 'Poppins', sans-serif; 
+    background-color: #f4f7f6; 
+    color: #333; 
+} 
+ 
+.container { 
+    display: flex; 
+    width: 100vw; 
+    height: 100vh; 
+} 
+ 
+.controls-column { 
+    flex: 1; 
+    padding: 30px; 
+    background-color: #ffffff; 
+    box-shadow: 4px 0 15px rgba(0,0,0,0.08); 
+    z-index: 10; 
+    overflow-y: auto; 
+    max-width: 380px; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 25px; 
+} 
+ 
+.logo { 
+    width: 150px; 
+    margin: 0 auto 20px; 
+    display: block; 
+} 
+ 
+.control-section { 
+    opacity: 0; 
+    transform: translateY(20px); 
+    animation: fadeInUp 0.5s forwards; 
+} 
+ 
+.control-section:nth-child(2) { animation-delay: 0.1s; } 
+.control-section:nth-child(3) { animation-delay: 0.2s; } 
+.control-section:nth-child(4) { animation-delay: 0.3s; } 
+ 
+@keyframes fadeInUp { 
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    } 
+} 
+ 
+.viewer-column { 
+    flex: 3; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    height: 100%; 
+} 
+ 
+model-viewer { 
+    width: 100%; 
+    height: 100%; 
+} 
+ 
+h2 { 
+    font-size: 1.1em; 
+    margin-bottom: 15px; 
+    color: #555; 
+    font-weight: 600; 
+} 
+ 
+#drop-zone { 
+    width: 100%; 
+    height: 120px; 
+    border: 2px dashed #d0dbe5; 
+    border-radius: 12px; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    text-align: center; 
+    color: #8a9aab; 
+    transition: background-color 0.3s, border-color 0.3s; 
+    cursor: pointer; 
+} 
+ 
+#drop-zone.drag-over,
+#logo-drop-zone.drag-over {
+    background-color: #e9f2ff;
+    border-color: #ff6600;
+}
 
-body, html {
-    margin: 0;
-    padding: 0;
+.image-preview-container {
+    position: relative;
     width: 100%;
     height: 100%;
-    font-family: 'Poppins', sans-serif;
-    background-color: #f4f7f6;
-    color: #333;
-}
-
-.container {
-    display: flex;
-    width: 100vw;
-    height: 100vh;
-}
-
-.controls-column {
-    flex: 1;
-    padding: 30px;
-    background-color: #ffffff;
-    box-shadow: 4px 0 15px rgba(0,0,0,0.08);
-    z-index: 10;
-    overflow-y: auto;
-    max-width: 380px;
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-}
-
-.logo {
-    width: 150px;
-    margin: 0 auto 20px;
-    display: block;
-}
-
-.control-section {
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeInUp 0.5s forwards;
-}
-
-.control-section:nth-child(2) { animation-delay: 0.1s; }
-.control-section:nth-child(3) { animation-delay: 0.2s; }
-.control-section:nth-child(4) { animation-delay: 0.3s; }
-
-@keyframes fadeInUp {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.viewer-column {
-    flex: 3;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100%;
 }
 
-model-viewer {
+.preview-image {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+}
+
+.remove-image-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    line-height: 20px;
+    text-align: center;
+    padding: 0;
+}
+
+.form-input {
     width: 100%;
-    height: 100%;
-}
-
-h2 {
-    font-size: 1.1em;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #d0dbe5;
+    box-sizing: border-box;
     margin-bottom: 15px;
-    color: #555;
-    font-weight: 600;
 }
 
-#drop-zone {
-    width: 100%;
+#quantity {
+    margin-bottom: 0;
+}
+
+#logo-drop-zone {
     height: 120px;
     border: 2px dashed #d0dbe5;
     border-radius: 12px;
@@ -92,122 +156,128 @@ h2 {
     transition: background-color 0.3s, border-color 0.3s;
     cursor: pointer;
 }
+ 
+#color-picker { 
+    width: 100%; 
+    padding: 5px; 
+    border-radius: 8px; 
+    border: 1px solid #d0dbe5; 
+    box-sizing: border-box; 
+    height: 48px; 
+} 
+ 
+#download-pdf-btn { 
+    width: 100%; 
+    padding: 12px; 
+    background-color: #ff6600; /* Orange color */ 
+    color: white; 
+    border: none; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    font-size: 1em; 
+    font-weight: 600; 
+    transition: background-color 0.3s, transform 0.2s; 
+} 
+ 
+#download-pdf-btn:hover { 
+    background-color: #e65c00; 
+    transform: translateY(-2px); 
+} 
+ 
+/* Popup Styles */ 
+.popup-container { 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    background-color: rgba(0, 0, 0, 0.5); 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    z-index: 100; 
+    opacity: 0; 
+    animation: fadeIn 0.3s forwards; 
+} 
+ 
+.popup-content { 
+    background-color: white; 
+    padding: 30px; 
+    border-radius: 12px; 
+    text-align: center; 
+    box-shadow: 0 5px 25px rgba(0,0,0,0.15); 
+    transform: scale(0.9); 
+    animation: scaleIn 0.3s forwards; 
+} 
+ 
+#popup-close-btn { 
+    padding: 10px 25px; 
+    background-color: #ff6600; 
+    color: white; 
+    border: none; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    font-size: 1em; 
+    margin-top: 15px; 
+    transition: background-color 0.3s; 
+} 
+ 
+#popup-close-btn:hover { 
+    background-color: #e65c00; 
+} 
+ 
+@keyframes fadeIn { to { opacity: 1; } } 
+@keyframes scaleIn { to { transform: scale(1); } } 
+ 
+    </style> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> 
+</head> 
+<body> 
+    <div class="container"> 
+        <div class="controls-column"> 
+            <img src="https://menutech.services/assets/img/logomt.png" alt="Logo" class="logo"> 
+             
+            <div class="control-section">
+                <h2>Restaurant Details</h2>
+                <input type="text" id="restaurant-name" placeholder="Restaurant Name" class="form-input">
+                <input type="number" id="quantity" placeholder="Quantity" value="1" min="1" class="form-input">
+            </div>
 
-#drop-zone.drag-over {
-    background-color: #e9f2ff;
-    border-color: #ff6600;
-}
+            <div id="logo-drop-zone" class="control-section">
+                <p>Drag & drop restaurant logo or click to select</p>
+                <input type="file" id="logo-file-input" accept="image/*" hidden>
+            </div>
 
-#color-picker {
-    width: 100%;
-    padding: 5px;
-    border-radius: 8px;
-    border: 1px solid #d0dbe5;
-    box-sizing: border-box;
-    height: 48px;
-}
-
-#download-pdf-btn {
-    width: 100%;
-    padding: 12px;
-    background-color: #ff6600; /* Orange color */
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1em;
-    font-weight: 600;
-    transition: background-color 0.3s, transform 0.2s;
-}
-
-#download-pdf-btn:hover {
-    background-color: #e65c00;
-    transform: translateY(-2px);
-}
-
-/* Popup Styles */
-.popup-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 100;
-    opacity: 0;
-    animation: fadeIn 0.3s forwards;
-}
-
-.popup-content {
-    background-color: white;
-    padding: 30px;
-    border-radius: 12px;
-    text-align: center;
-    box-shadow: 0 5px 25px rgba(0,0,0,0.15);
-    transform: scale(0.9);
-    animation: scaleIn 0.3s forwards;
-}
-
-#popup-close-btn {
-    padding: 10px 25px;
-    background-color: #ff6600;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1em;
-    margin-top: 15px;
-    transition: background-color 0.3s;
-}
-
-#popup-close-btn:hover {
-    background-color: #e65c00;
-}
-
-@keyframes fadeIn { to { opacity: 1; } }
-@keyframes scaleIn { to { transform: scale(1); } }
-
-    </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-</head>
-<body>
-    <div class="container">
-        <div class="controls-column">
-            <img src="https://menutech.services/assets/img/logomt.png" alt="Logo" class="logo">
-            
             <div id="drop-zone" class="control-section">
-                <p>Drag & drop an image or click to select a file</p>
+                <p>Drag & drop a texture image or click to select a file</p>
                 <input type="file" id="file-input" accept="image/*" hidden>
             </div>
-
-            <div class="control-section">
-                <h2>Base Color Tint</h2>
-                <input type="color" id="color-picker" value="#ffffff">
-            </div>
-
-            <div class="control-section">
-                <h2>Export Texture</h2>
-                <button id="download-pdf-btn">Download as PDF</button>
-            </div>
-        </div>
-        <div class="viewer-column">
-            <model-viewer id="model-viewer"
-                          src="./shirt.gltf"
-                          alt="A 3D model of a shirt"
-                          ar
-                          ar-modes="webxr scene-viewer quick-look"
-                          camera-controls
-                          environment-image="neutral"
-                          poster="poster.webp"
-                          shadow-intensity="1">
-            </model-viewer>
-        </div>
-    </div>
-
-    <!-- Custom Popup -->
+ 
+            <div class="control-section"> 
+                <h2>Base Color Tint</h2> 
+                <input type="color" id="color-picker" value="#ffffff"> 
+            </div> 
+ 
+            <div class="control-section"> 
+                <h2>Export Details</h2> 
+                <button id="download-pdf-btn">Download as PDF</button> 
+            </div> 
+        </div> 
+        <div class="viewer-column"> 
+            <model-viewer id="model-viewer" 
+                          src="./shirt.gltf" 
+                          alt="A 3D model of a shirt" 
+                          ar 
+                          ar-modes="webxr scene-viewer quick-look" 
+                          camera-controls 
+                          environment-image="neutral" 
+                          poster="poster.webp" 
+                          shadow-intensity="1"> 
+            </model-viewer> 
+        </div> 
+    </div> 
+ 
+    <!-- Custom Popup --> 
     <div id="popup" class="popup-container" style="display: none;">
         <div class="popup-content">
             <p id="popup-message"></p>
@@ -215,59 +285,108 @@ h2 {
         </div>
     </div>
 
-    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-    const modelViewer = document.getElementById('model-viewer');
+    <!-- Loading Popup -->
+    <div id="loading-popup" class="popup-container" style="display: none;">
+        <div class="popup-content">
+            <p>Generating render...</p>
+        </div>
+    </div>
+ 
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script> 
+    <script> 
+        document.addEventListener('DOMContentLoaded', () => { 
+    const modelViewer = document.getElementById('model-viewer'); 
     const dropZone = document.getElementById('drop-zone');
     const fileInput = document.getElementById('file-input');
     const colorPicker = document.getElementById('color-picker');
     const downloadPdfBtn = document.getElementById('download-pdf-btn');
+    const restaurantNameInput = document.getElementById('restaurant-name');
+    const quantityInput = document.getElementById('quantity');
+    const logoDropZone = document.getElementById('logo-drop-zone');
+    const logoFileInput = document.getElementById('logo-file-input');
 
     // Popup elements
     const popup = document.getElementById('popup');
     const popupMessage = document.getElementById('popup-message');
     const popupCloseBtn = document.getElementById('popup-close-btn');
+    const loadingPopup = document.getElementById('loading-popup');
 
     let currentTextureUrl = null;
     let objectUrl = null;
+    let logoUrl = null;
+
+    const originalLogoText = logoDropZone.querySelector('p').textContent;
+    const originalTextureText = dropZone.querySelector('p').textContent;
+
+
+    // --- UI Update Logic ---
+    const updateDropZonePreview = (dropZone, fileUrl, onRemove) => {
+        dropZone.innerHTML = ''; // Clear existing content
+        const previewContainer = document.createElement('div');
+        previewContainer.className = 'image-preview-container';
+
+        const previewImage = document.createElement('img');
+        previewImage.className = 'preview-image';
+        previewImage.src = fileUrl;
+
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'remove-image-btn';
+        removeBtn.textContent = 'X';
+        removeBtn.onclick = (e) => {
+            e.stopPropagation(); // Prevent re-opening file dialog
+            onRemove();
+        };
+
+        previewContainer.appendChild(previewImage);
+        previewContainer.appendChild(removeBtn);
+        dropZone.appendChild(previewContainer);
+    };
+
+    const resetDropZone = (dropZone, originalText) => {
+        dropZone.innerHTML = '';
+        const p = document.createElement('p');
+        p.textContent = originalText;
+        dropZone.appendChild(p);
+    };
+
 
     // --- Popup Logic ---
     const showPopup = (message) => {
-        popupMessage.textContent = message;
-        popup.style.display = 'flex';
-    };
-
-    popupCloseBtn.addEventListener('click', () => {
-        popup.style.display = 'none';
-    });
-
-    // --- Model and State Logic ---
-    const modelIsLoaded = () => modelViewer.model;
-
-    const waitForModel = (callback) => {
-        if (modelIsLoaded()) {
-            callback();
-        } else {
-            modelViewer.addEventListener('load', () => callback(), { once: true });
-        }
-    };
-
-    const applyColor = (hexColor) => {
-        waitForModel(() => {
-            const material = modelViewer.model.materials[0];
-            const r = parseInt(hexColor.slice(1, 3), 16) / 255;
-            const g = parseInt(hexColor.slice(3, 5), 16) / 255;
-            const b = parseInt(hexColor.slice(5, 7), 16) / 255;
-            material.pbrMetallicRoughness.setBaseColorFactor([r, g, b, 1]);
-        });
-    };
-
+        popupMessage.textContent = message; 
+        popup.style.display = 'flex'; 
+    }; 
+ 
+    popupCloseBtn.addEventListener('click', () => { 
+        popup.style.display = 'none'; 
+    }); 
+ 
+    // --- Model and State Logic --- 
+    const modelIsLoaded = () => modelViewer.model; 
+ 
+    const waitForModel = (callback) => { 
+        if (modelIsLoaded()) { 
+            callback(); 
+        } else { 
+            modelViewer.addEventListener('load', () => callback(), { once: true }); 
+        } 
+    }; 
+ 
+    const applyColor = (hexColor) => { 
+        waitForModel(() => { 
+            const material = modelViewer.model.materials[0]; 
+            const r = parseInt(hexColor.slice(1, 3), 16) / 255; 
+            const g = parseInt(hexColor.slice(3, 5), 16) / 255; 
+            const b = parseInt(hexColor.slice(5, 7), 16) / 255; 
+            material.pbrMetallicRoughness.setBaseColorFactor([r, g, b, 1]); 
+        }); 
+    }; 
+ 
     const applyTexture = (url) => {
         if (objectUrl) URL.revokeObjectURL(objectUrl);
         currentTextureUrl = url;
         objectUrl = url.startsWith('blob:') ? url : null;
-        
+        colorPicker.disabled = true; // Disable color picker immediately
+
         waitForModel(async () => {
             try {
                 const texture = await modelViewer.createTexture(url);
@@ -276,73 +395,190 @@ h2 {
             } catch (error) {
                 console.error('Error applying texture:', error);
                 showPopup('Could not apply the texture. Please ensure it is a valid image file.');
+                colorPicker.disabled = false; // Re-enable on error
             }
         });
     };
 
+    const removeTexture = () => {
+        colorPicker.disabled = false; // Re-enable color picker immediately
+        waitForModel(() => {
+            const material = modelViewer.model.materials[0];
+            // To remove the texture, we simply set the texture property to null.
+            material.pbrMetallicRoughness.baseColorTexture.setTexture(null);
+            if (currentTextureUrl && currentTextureUrl.startsWith('blob:')) {
+                URL.revokeObjectURL(currentTextureUrl);
+            }
+            currentTextureUrl = null;
+            objectUrl = null;
+            applyColor(colorPicker.value); // Re-apply base color
+        });
+    };
+ 
     const handleFile = (file) => {
         if (file && file.type.startsWith('image/')) {
-            applyTexture(URL.createObjectURL(file));
+            const fileUrl = URL.createObjectURL(file);
+            applyTexture(fileUrl);
+            updateDropZonePreview(dropZone, fileUrl, () => {
+                removeTexture();
+                resetDropZone(dropZone, originalTextureText);
+            });
         } else {
             showPopup('Please select or drop a valid image file.');
         }
     };
-
-    // --- Event Listeners ---
-    colorPicker.addEventListener('input', (event) => applyColor(event.target.value));
-    dropZone.addEventListener('click', () => fileInput.click());
-    fileInput.addEventListener('change', (event) => handleFile(event.target.files[0]));
-
-    dropZone.addEventListener('dragover', (event) => {
-        event.preventDefault();
-        dropZone.classList.add('drag-over');
-    });
-
-    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
-    dropZone.addEventListener('drop', (event) => {
-        event.preventDefault();
-        dropZone.classList.remove('drag-over');
+ 
+    // --- Event Listeners --- 
+    colorPicker.addEventListener('input', (event) => applyColor(event.target.value)); 
+    dropZone.addEventListener('click', () => fileInput.click()); 
+    fileInput.addEventListener('change', (event) => handleFile(event.target.files[0])); 
+ 
+    dropZone.addEventListener('dragover', (event) => { 
+        event.preventDefault(); 
+        dropZone.classList.add('drag-over'); 
+    }); 
+ 
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over')); 
+    dropZone.addEventListener('drop', (event) => { 
+        event.preventDefault(); 
+        dropZone.classList.remove('drag-over'); 
         handleFile(event.dataTransfer.files[0]);
     });
 
+    logoDropZone.addEventListener('click', () => logoFileInput.click());
+    logoFileInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+            logoUrl = URL.createObjectURL(file);
+            updateDropZonePreview(logoDropZone, logoUrl, () => {
+                URL.revokeObjectURL(logoUrl);
+                logoUrl = null;
+                resetDropZone(logoDropZone, originalLogoText);
+            });
+        } else {
+            showPopup('Please select a valid image file for the logo.');
+        }
+    });
+
+    logoDropZone.addEventListener('dragover', (event) => {
+        event.preventDefault();
+        logoDropZone.classList.add('drag-over');
+    });
+
+    logoDropZone.addEventListener('dragleave', () => logoDropZone.classList.remove('drag-over'));
+    logoDropZone.addEventListener('drop', (event) => {
+        event.preventDefault();
+        logoDropZone.classList.remove('drag-over');
+        const file = event.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+            logoUrl = URL.createObjectURL(file);
+            updateDropZonePreview(logoDropZone, logoUrl, () => {
+                URL.revokeObjectURL(logoUrl);
+                logoUrl = null;
+                resetDropZone(logoDropZone, originalLogoText);
+            });
+        } else {
+            showPopup('Please drop a valid image file for the logo.');
+        }
+    });
+
+    const captureModelView = async (angle) => {
+        const [yaw, pitch, radius] = angle.split(' ').map(Number);
+        modelViewer.cameraOrbit = `${yaw}deg ${pitch}deg ${radius}%`;
+        await new Promise(resolve => setTimeout(resolve, 500)); // Wait for render
+        return modelViewer.toDataURL('image/png');
+    };
+ 
     downloadPdfBtn.addEventListener('click', () => {
-        if (!currentTextureUrl) {
+        waitForModel(async () => {
+            const restaurantName = restaurantNameInput.value || 'N/A';
+            const quantity = quantityInput.value || '1';
+
+            if (!currentTextureUrl) {
             showPopup('Please upload a texture image before exporting.');
             return;
         }
+        if (!logoUrl) {
+            showPopup('Please upload a logo image before exporting.');
+            return;
+        }
+        loadingPopup.style.display = 'flex';
         const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a3' });
-        const img = new Image();
-        img.crossOrigin = "Anonymous";
-        img.src = currentTextureUrl;
+        try {
+            await new Promise(resolve => setTimeout(resolve, 100)); // Allow UI to update
+            const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
-        img.onload = () => {
+            // --- Capture Model Views ---
+            const frontViewImg = await captureModelView('0 75 120');
+            const sideViewImg = await captureModelView('90 75 120');
+            const backViewImg = await captureModelView('180 75 120');
+
+            // --- PDF Styling and Content ---
             const pageWidth = doc.internal.pageSize.getWidth();
             const pageHeight = doc.internal.pageSize.getHeight();
-            const margin = 20;
-            const printableWidth = pageWidth - (margin * 2);
-            const printableHeight = pageHeight - (margin * 2);
-            const imgAspectRatio = img.width / img.height;
-            const printableAspectRatio = printableWidth / printableHeight;
-            let imgWidth, imgHeight;
+            const margin = 10;
+            const contentWidth = pageWidth - margin * 2;
 
-            if (imgAspectRatio > printableAspectRatio) {
-                imgWidth = printableWidth;
-                imgHeight = imgWidth / imgAspectRatio;
-            } else {
-                imgHeight = printableHeight;
-                imgWidth = imgHeight * imgAspectRatio;
+            // Helper function for drawing styled text boxes
+            const drawTextBox = (title, value, x, y, width, height) => {
+                doc.setFillColor(240, 240, 240);
+                doc.rect(x, y, width, height, 'F');
+                doc.setDrawColor(200, 200, 200);
+                doc.rect(x, y, width, height, 'S');
+                doc.setFontSize(8);
+                doc.setFont('helvetica', 'bold');
+                doc.text(title, x + 2, y + 4);
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                doc.text(value, x + 2, y + 9);
+            };
+
+            // Header
+            if (logoUrl) {
+                doc.addImage(logoUrl, 'PNG', margin, margin, 25, 25);
             }
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            doc.text('TECHNICAL DATA SHEET', pageWidth / 2, margin + 15, { align: 'center' });
 
-            const x = margin + (printableWidth - imgWidth) / 2;
-            const y = margin + (printableHeight - imgHeight) / 2;
-            doc.addImage(img, 'PNG', x, y, imgWidth, imgHeight);
-            doc.save('texture-A3-horizontal.pdf');
-        };
-        img.onerror = () => showPopup('Could not load the image to generate the PDF.');
+            // Details Grid
+            const boxHeight = 12;
+            const col1 = margin;
+            const col2 = margin + contentWidth / 2;
+            const colWidth = contentWidth / 2;
+            let yPos = margin + 30;
+
+            drawTextBox('Brand:', restaurantName, col1, yPos, colWidth, boxHeight);
+            drawTextBox('Quantity:', quantity, col2, yPos, colWidth, boxHeight);
+            yPos += boxHeight;
+            drawTextBox('Size:', 'M', col1, yPos, colWidth, boxHeight);
+            drawTextBox('Designed by:', 'Menutech', col2, yPos, colWidth, boxHeight);
+
+            // Renders
+            yPos += boxHeight + 10;
+            const renderWidth = (contentWidth / 3) - 8;
+            const renderHeight = renderWidth * 1.4;
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'bold');
+            doc.text('FRONT', col1 + renderWidth / 2, yPos, { align: 'center' });
+            doc.text('SIDE', col1 + renderWidth + 7.5 + renderWidth / 2, yPos, { align: 'center' });
+            doc.text('BACK', col1 + (renderWidth + 7.5) * 2 + renderWidth / 2, yPos, { align: 'center' });
+            yPos += 5;
+            doc.addImage(frontViewImg, 'PNG', col1, yPos, renderWidth, renderHeight);
+            doc.addImage(sideViewImg, 'PNG', col1 + renderWidth + 7.5, yPos, renderWidth, renderHeight);
+            doc.addImage(backViewImg, 'PNG', col1 + (renderWidth + 7.5) * 2, yPos, renderWidth, renderHeight);
+
+            doc.save(`${restaurantName.replace(/\s/g, '_')}_tshirt_details.pdf`);
+        } catch (error) {
+            console.error('Error generating PDF:', error);
+            showPopup('An error occurred while generating the PDF. Please try again.');
+        } finally {
+            loadingPopup.style.display = 'none';
+        }
+        });
     });
 });
-
-    </script>
-</body>
+ 
+    </script> 
+</body> 
 </html>

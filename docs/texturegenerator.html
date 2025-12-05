@@ -1,0 +1,549 @@
+<!DOCTYPE html> 
+<html lang="en"> 
+<head> 
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>Menutech Template Editor</title> 
+    <!-- Font Awesome for icons --> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> 
+    <style> 
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap'); 
+ 
+body { 
+    font-family: 'Roboto', sans-serif; 
+    background-color: #f0f2f5; 
+    margin: 0; 
+    padding: 0; 
+    min-height: 100vh; 
+} 
+ 
+#app-container { 
+    width: 100%; 
+    height: 100%; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
+    position: relative; 
+} 
+ 
+#logo { 
+    position: fixed; 
+    top: 30px; 
+    left: 30px; 
+    height: 120px; 
+    z-index: 100; 
+} 
+ 
+#toolbar { 
+    position: absolute; 
+    top: 20px; 
+    left: 50%; 
+    transform: translateX(-50%); 
+    width: auto; 
+    background-color: #ffffff; 
+    border-radius: 8px; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
+    display: flex; 
+    flex-direction: column; 
+    padding: 8px; 
+    z-index: 1000; 
+    border: 1px solid #ccc; 
+} 
+ 
+#toolbar-header { 
+    width: 100%; 
+    padding: 5px; 
+    text-align: center; 
+    cursor: move; 
+    background-color: #f8f9fa; 
+    border-bottom: 1px solid #dee2e6; 
+    border-top-left-radius: 8px; 
+    border-top-right-radius: 8px; 
+    font-size: 14px; 
+    color: #555; 
+    user-select: none; 
+} 
+#toolbar-header i { 
+    margin-right: 5px; 
+} 
+ 
+#toolbar .tool-group { 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+    padding: 8px; 
+} 
+#toolbar .separator { 
+    height: 1px; 
+    width: 90%; 
+    background-color: #e0e0e0; 
+    margin: 0 auto; 
+} 
+ 
+.toolbar-button { 
+    cursor: grab; 
+} 
+ 
+#editor-container { 
+    width: 100%; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 20px; 
+    margin-top: 20px; /* Space for logo */ 
+} 
+ 
+#canvas-container { 
+    border: 1px solid #ccc; 
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+    /* Width and height are now set by script */ 
+} 
+ 
+#generate-btn { 
+    padding: 12px 25px; 
+} 
+ 
+/* Other styles from before remain largely the same, but are included for completeness */ 
+.tool-group { display: flex; align-items: center; gap: 8px; } 
+.toolbar-button { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 10px; border-radius: 5px; transition: background-color 0.2s; font-size: 11px; color: #333; } 
+.toolbar-button:hover { background-color: #e9ecef; } 
+.toolbar-button i { font-size: 16px; margin-bottom: 3px; } 
+#font-family, #font-size { padding: 5px 7px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; } 
+#font-size { width: 45px; } 
+.color-controls { display: flex; align-items: center; gap: 5px; } 
+.color-controls label { font-size: 13px; color: #555; } 
+input[type="color"] { width: 26px; height: 26px; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; padding: 0; } 
+#generate-btn { font-size: 15px; cursor: pointer; background-color: #f0ad4e; color: white; border: none; border-radius: 5px; transition: background-color 0.3s; } 
+#generate-btn:hover { background-color: #c08533; } 
+.popup-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); display: none; justify-content: center; align-items: center; z-index: 1000; } 
+.popup-content { position: relative; background-color: #fff; padding: 40px; border-radius: 8px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); } 
+.close-btn { position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; color: #aaa; cursor: pointer; } 
+.close-btn:hover { color: #333; } 
+#next-step-btn { 
+    background-color: #f0ad4e; /* Orange color */ 
+    color: white; 
+    padding: 12px 24px; 
+    border: none; 
+    border-radius: 5px; 
+    font-size: 16px; 
+    cursor: pointer; 
+    transition: background-color 0.3s ease; 
+} 
+#next-step-btn:hover { 
+    background-color: #ec971f; /* Darker orange on hover */ 
+} 
+ 
+    </style> 
+</head> 
+<body> 
+    <div id="app-container"> 
+        <img src="https://menutech.services/assets/img/logomt.png" alt="Menutech Logo" id="logo"> 
+ 
+        <div id="toolbar"> 
+            <div id="toolbar-header"> 
+                <i class="fas fa-arrows-alt"></i> Tool Panel 
+            </div> 
+            <div class="tool-group"> 
+                <div id="add-text" class="toolbar-button" draggable="true" title="Drag to add Text"> 
+                    <i class="fas fa-font"></i> 
+                    <span>Text</span> 
+                </div> 
+            </div> 
+            <div class="tool-group separator"></div> 
+            <div class="tool-group"> 
+                <select id="font-family" title="Font Family"> 
+                    <option>Arial</option> 
+                    <option selected>Helvetica</option> 
+                    <option>Times New Roman</option> 
+                    <option>Georgia</option> 
+                    <option>Verdana</option> 
+                </select> 
+            </div> 
+            <div class="tool-group separator"></div> 
+            <div class="tool-group color-controls"> 
+                <label for="text-color">Fill</label> 
+                <input type="color" id="text-color" value="#000000" title="Text Color"> 
+            </div> 
+        </div> 
+         
+        <div id="editor-container"> 
+            <div id="canvas-container"></div> 
+            <button id="generate-btn">Generate Template</button> 
+        </div> 
+    </div> 
+ 
+    <div id="popup" class="popup-container"> 
+        <div class="popup-content"> 
+            <span class="close-btn">&times;</span> 
+            <h2>Template Generated!</h2> 
+            <button id="next-step-btn">View in 3D & Prepare for Printing</button> 
+        </div> 
+    </div> 
+ 
+    <script src="https://unpkg.com/konva@9.3.13/konva.min.js"></script>
+    <script> 
+        document.addEventListener('DOMContentLoaded', () => { 
+    const canvasContainer = document.getElementById('canvas-container'); 
+ 
+    const stage = new Konva.Stage({ 
+        container: 'canvas-container', 
+        width: 1, 
+        height: 1, 
+    }); 
+ 
+    const layer = new Konva.Layer(); 
+    stage.add(layer); 
+ 
+    // --- Make Toolbar Draggable --- 
+    const toolbar = document.getElementById('toolbar'); 
+    const toolbarHeader = document.getElementById('toolbar-header'); 
+    let isDragging = false; 
+    let offset = { x: 0, y: 0 }; 
+ 
+    toolbarHeader.addEventListener('mousedown', (e) => { 
+        isDragging = true; 
+        offset.x = e.clientX - toolbar.offsetLeft; 
+        offset.y = e.clientY - toolbar.offsetTop; 
+        toolbar.style.cursor = 'grabbing'; 
+    }); 
+ 
+    document.addEventListener('mousemove', (e) => { 
+        if (!isDragging) return; 
+        toolbar.style.left = `${e.clientX - offset.x}px`; 
+        toolbar.style.top = `${e.clientY - offset.y}px`; 
+    }); 
+ 
+    document.addEventListener('mouseup', () => { 
+        isDragging = false; 
+        toolbar.style.cursor = 'default'; 
+    }); 
+ 
+    // --- Responsive Canvas Logic --- 
+    let backgroundRect; // To hold the background image shape 
+    const resizeCanvas = () => { 
+        const editorContainer = document.getElementById('editor-container'); 
+        const generateBtn = document.getElementById('generate-btn'); 
+ 
+        const topOffset = 80; 
+        const bottomOffset = generateBtn.offsetHeight + 40; 
+ 
+        const availableWidth = window.innerWidth * 0.95; 
+        const availableHeight = window.innerHeight - topOffset - bottomOffset; 
+ 
+        const size = Math.min(availableWidth, availableHeight); 
+ 
+        stage.width(size); 
+        stage.height(size); 
+ 
+        if (backgroundRect) { 
+            backgroundRect.width(size); 
+            backgroundRect.height(size); 
+        } 
+ 
+        layer.draw(); 
+    }; 
+ 
+    // --- Canvas and Editor Logic --- 
+    const generateBtn = document.getElementById('generate-btn'); 
+    const popup = document.getElementById('popup'); 
+    const closeBtn = document.querySelector('.close-btn'); 
+    const nextStepBtn = document.getElementById('next-step-btn'); 
+    const addTextBtn = document.getElementById('add-text'); 
+    const fontFamily = document.getElementById('font-family'); 
+    const textColor = document.getElementById('text-color'); 
+ 
+    // Load the background image and set up resizing 
+    const bgImage = new Image(); 
+    bgImage.src = './plantilla.png'; 
+    bgImage.onload = () => { 
+        backgroundRect = new Konva.Image({ 
+            x: 0, 
+            y: 0, 
+            image: bgImage, 
+            width: stage.width(), 
+            height: stage.height(), 
+            listening: false, // Make it non-interactive 
+        }); 
+        layer.add(backgroundRect); 
+        backgroundRect.moveToBottom(); 
+        resizeCanvas(); // Initial resize 
+        layer.draw(); 
+    }; 
+ 
+    window.addEventListener('resize', resizeCanvas); 
+ 
+    // --- Drag and Drop for Elements --- 
+    addTextBtn.addEventListener('dragstart', (e) => e.dataTransfer.setData('type', 'text')); 
+ 
+    canvasContainer.addEventListener('dragover', (e) => e.preventDefault()); 
+ 
+    canvasContainer.addEventListener('drop', (e) => { 
+        e.preventDefault(); 
+        stage.setPointersPositions(e); 
+        const pos = stage.getPointerPosition(); 
+ 
+        if (e.dataTransfer.files.length > 0) { 
+            const files = e.dataTransfer.files; 
+            for (const file of files) { 
+                if (file.type.startsWith('image/')) { 
+                    const reader = new FileReader(); 
+                    reader.onload = (f) => { 
+                        const img = new Image(); 
+                        img.src = f.target.result; 
+                        img.onload = () => { 
+                            const konvaImage = new Konva.Image({ 
+                                x: pos.x, 
+                                y: pos.y, 
+                                image: img, 
+                                width: 200, 
+                                height: (img.height / img.width) * 200, 
+                                draggable: true, 
+                            }); 
+                            layer.add(konvaImage); 
+                            addTransformer(konvaImage); 
+                        }; 
+                    }; 
+                    reader.readAsDataURL(file); 
+                } 
+            } 
+        } else { 
+            const type = e.dataTransfer.getData('type'); 
+            if (type === 'text') { 
+                const text = new Konva.Text({ 
+                    x: pos.x, 
+                    y: pos.y, 
+                    text: 'Your Text Here', 
+                    fontSize: 40, 
+                    fontFamily: fontFamily.value, 
+                    fill: textColor.value, 
+                    draggable: true, 
+                }); 
+                layer.add(text); 
+                addTransformer(text); 
+            } 
+        } 
+    }); 
+ 
+    // --- Keyboard and UI Controls --- 
+    let currentTransformer; 
+ 
+    const addTransformer = (shape) => { 
+        if (currentTransformer) { 
+            currentTransformer.destroy(); 
+        } 
+ 
+        const transformer = new Konva.Transformer({ 
+            nodes: [shape], 
+            keepRatio: true, 
+            enabledAnchors: ['top-left', 'top-right', 'bottom-left', 'bottom-right'], 
+        }); 
+ 
+        layer.add(transformer); 
+        currentTransformer = transformer; 
+ 
+        shape.on('transform', () => { 
+            // For text, we need to adjust font size when scaling 
+            if (shape.getClassName() === 'Text') { 
+                shape.fontSize(shape.fontSize() * shape.scaleX()); 
+                shape.scaleX(1); 
+                shape.scaleY(1); 
+            } 
+        }); 
+    }; 
+ 
+    stage.on('click tap', (e) => { 
+        // If we clicked on an empty area, remove the transformer 
+        if (e.target === stage || e.target === backgroundRect) { 
+            if (currentTransformer) { 
+                currentTransformer.destroy(); 
+                layer.draw(); 
+            } 
+            return; 
+        } 
+ 
+        // If we clicked on a shape, add a transformer 
+        if (e.target.draggable()) { 
+            addTransformer(e.target); 
+        } 
+    }); 
+ 
+    stage.on('dblclick dbltap', function (e) { 
+        const textNode = e.target; 
+        if (textNode.getClassName() !== 'Text') { 
+            return; 
+        } 
+ 
+        // Hide the text node and transformer 
+        textNode.hide(); 
+        if (currentTransformer) { 
+            currentTransformer.destroy(); // Destroy transformer on edit
+        } 
+        layer.draw(); 
+ 
+        // Create a textarea for editing 
+        const textPosition = textNode.absolutePosition(); 
+        const areaPosition = { 
+            x: stage.container().offsetLeft + textPosition.x, 
+            y: stage.container().offsetTop + textPosition.y, 
+        }; 
+ 
+        const textarea = document.createElement('textarea'); 
+        document.body.appendChild(textarea); 
+ 
+        textarea.value = textNode.text(); 
+        textarea.style.position = 'absolute'; 
+        textarea.style.top = areaPosition.y + 'px'; 
+        textarea.style.left = areaPosition.x + 'px'; 
+        textarea.style.width = textNode.width() - textNode.padding() * 2 + 'px'; 
+        textarea.style.height = textNode.height() - textNode.padding() * 2 + 5 + 'px'; 
+        textarea.style.fontSize = textNode.fontSize() + 'px'; 
+        textarea.style.border = '1px solid #ccc'; 
+        textarea.style.padding = '0px'; 
+        textarea.style.margin = '0px'; 
+        textarea.style.overflow = 'hidden'; 
+        textarea.style.background = 'none'; 
+        textarea.style.outline = 'none'; 
+        textarea.style.resize = 'none'; 
+        textarea.style.lineHeight = textNode.lineHeight(); 
+        textarea.style.fontFamily = textNode.fontFamily(); 
+        textarea.style.transformOrigin = 'left top'; 
+        textarea.style.textAlign = textNode.align(); 
+        textarea.style.color = textNode.fill(); 
+        const rotation = textNode.rotation(); 
+        let transform = ''; 
+        if (rotation) { 
+            transform += 'rotateZ(' + rotation + 'deg)'; 
+        } 
+ 
+        textarea.style.transform = transform; 
+ 
+        textarea.focus(); 
+ 
+        function removeTextarea() { 
+            textarea.parentNode.removeChild(textarea); 
+            window.removeEventListener('click', handleOutsideClick); 
+            textNode.show(); 
+            if (currentTransformer) { 
+                currentTransformer.show(); 
+            } 
+            layer.draw(); 
+        } 
+ 
+        textarea.addEventListener('blur', function () {
+            textNode.text(textarea.value);
+            if (textarea.value.trim() === '') {
+                textNode.destroy();
+                if (currentTransformer) {
+                    currentTransformer.destroy();
+                }
+            } else {
+                textNode.width('auto');
+            }
+            removeTextarea();
+        });
+
+        textarea.addEventListener('keydown', function (e) { 
+            if (e.keyCode === 13 && !e.shiftKey) { 
+                textNode.text(textarea.value); 
+                removeTextarea(); 
+            } 
+            if (e.keyCode === 27) { 
+                removeTextarea(); 
+            } 
+        }); 
+ 
+        function handleOutsideClick(e) { 
+            if (e.target !== textarea) { 
+                textNode.text(textarea.value); 
+                removeTextarea(); 
+            } 
+        } 
+        setTimeout(() => { 
+            window.addEventListener('click', handleOutsideClick); 
+        }); 
+    }); 
+ 
+    window.addEventListener('keydown', (e) => { 
+        if ((e.key === 'Delete' || e.key === 'Backspace') && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') { 
+            if (currentTransformer) { 
+                currentTransformer.nodes().forEach(node => node.destroy()); 
+                currentTransformer.destroy(); 
+                layer.draw(); 
+            } 
+        } 
+    }); 
+ 
+    const updateTextProperties = () => { 
+        if (currentTransformer) { 
+            const shape = currentTransformer.nodes()[0]; 
+            if (shape && shape.getClassName() === 'Text') { 
+                shape.fontFamily(fontFamily.value); 
+                shape.fill(textColor.value); 
+                layer.draw(); 
+            } 
+        } 
+    }; 
+ 
+    fontFamily.addEventListener('change', updateTextProperties); 
+    textColor.addEventListener('input', updateTextProperties); 
+ 
+    // --- Export Logic --- 
+    generateBtn.addEventListener('click', () => { 
+        // Hide transformer and background for export 
+        if (currentTransformer) { 
+            currentTransformer.hide(); 
+        } 
+        if (backgroundRect) { 
+            backgroundRect.hide(); 
+        } 
+        layer.draw(); 
+ 
+        const dataURL = stage.toDataURL({ 
+            pixelRatio: 1200 / stage.width(), 
+        }); 
+ 
+        // Show transformer and background again 
+        if (currentTransformer) { 
+            currentTransformer.show(); 
+        } 
+        if (backgroundRect) { 
+            backgroundRect.show(); 
+        } 
+        layer.draw(); 
+ 
+        const img = new Image(); 
+        img.src = dataURL; 
+        img.onload = () => { 
+            const tempCanvas = document.createElement('canvas'); 
+            const tempCtx = tempCanvas.getContext('2d'); 
+            tempCanvas.width = 1200; 
+            tempCanvas.height = 1200; 
+ 
+            // Ensure canvas is transparent before drawing 
+            tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height); 
+ 
+            // Apply vertical flip ONLY 
+            tempCtx.translate(0, tempCanvas.height); 
+            tempCtx.scale(1, -1); 
+            tempCtx.drawImage(img, 0, 0); 
+ 
+            const link = document.createElement('a'); 
+            link.href = tempCanvas.toDataURL('image/png'); 
+            link.download = 'template.png'; 
+            link.click(); 
+ 
+            popup.style.display = 'flex'; 
+        }; 
+    }); 
+ 
+    closeBtn.addEventListener('click', () => popup.style.display = 'none'); 
+    nextStepBtn.addEventListener('click', () => { 
+        window.location.href = 'https://menutech.biz/createtshirt'; 
+    }); 
+}); 
+ 
+    </script> 
+</body> 
+</html> 

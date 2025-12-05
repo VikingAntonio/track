@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-key="hero_title">Client Access Portal</title>
+    <link rel="stylesheet" href="./assets/css/portal.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="hero">
+        <div class="logo-container">
+            <img src="https://menutech.services/assets/img/logomt.png" alt="MenuTech Logo" class="main-logo">
+        </div>
+        <div class="language-switcher">
+            <label for="lang-toggle">EN / ES</label>
+            <input type="checkbox" id="lang-toggle" class="lang-toggle">
+        </div>
+        <div class="container">
+            <h1 data-key="hero_title">Client Access Portal</h1>
+            <p data-key="hero_subtitle">Select your platform and follow the step-by-step instructions to grant us access to your website.</p>
+        </div>
+    </header>
+
+    <main>
+        <section id="plataformas" class="plataformas">
+            <div class="container">
+                <h2 data-key="platforms_title">Select Your Platform</h2>
+                <div class="plataformas-grid">
+                    <!-- Platform cards will be dynamically inserted here -->
+                </div>
+            </div>
+        </section>
+
+        <section id="instrucciones" class="instrucciones">
+            <div class="container">
+                <!-- Dynamic instructions will be shown here -->
+            </div>
+        </section>
+
+        <section id="formulario-contacto" class="formulario-contacto new-form-design">
+            <div class="super-container">
+                <form id="contact-form" class="container contact">
+                    <span class="mail"></span>
+                    <div class='top-heading'>
+                        <h2 data-key="form_title">Send Us Your Details</h2>
+                    </div>
+
+                    <div class="contact-form-fields">
+                        <div class="field">
+                            <label for="restaurante" data-key="form_label_restaurant">Restaurant</label>
+                            <input type="text" id="restaurante" name="restaurante" required>
+                        </div>
+                        <div class="field">
+                            <label for="plataforma-seleccionada" data-key="form_label_platform">Selected Platform</label>
+                            <input type="text" id="plataforma-seleccionada" name="plataforma" readonly>
+                        </div>
+                        <div class="field">
+                            <label for="dominio" data-key="form_label_domain">Domain</label>
+                            <input type="text" id="dominio" name="dominio" required>
+                        </div>
+                        <div class="field">
+                            <label for="notas" data-key="form_label_notes">Notes</label>
+                            <textarea id="notas" name="notas"></textarea>
+                        </div>
+                        <div class='button-container'>
+                            <button class='send' type="submit" data-key="form_button_send">Send</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- Success message moved outside the container to avoid z-index issues with the animation -->
+            <div id="form-success-message" class="form-success-message" data-key="form_sent_message"></div>
+        </section>
+
+        <section id="porque" class="porque">
+            <div class="container">
+                <h2 data-key="why_title">Why This Portal?</h2>
+                <div class="porque-grid">
+                    <div class="porque-item">
+                        <p data-key="why_text_1">Each platform works differently. This portal simplifies the process.</p>
+                    </div>
+                    <div class="porque-item">
+                        <p data-key="why_text_2">Save time and avoid confusion with clear, direct instructions.</p>
+                    </div>
+                    <div class="porque-item">
+                        <p data-key="why_text_3">Centralize information for more efficient tracking.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="cta" class="cta">
+            <div class="container">
+                <h2 data-key="cta_title">Need Help?</h2>
+                <a href="#" class="btn btn-primary" data-key="cta_button_video">Request Video Call Assistance</a>
+                <a href="#" class="btn btn-secondary" data-key="cta_button_whatsapp">Contact via WhatsApp</a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; <span id="year"></span> Menutech | All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Submission Status Popup -->
+    <div id="status-popup" class="popup-overlay">
+        <div class="popup-content">
+            <button id="popup-close" class="popup-close" aria-label="Close">&times;</button>
+            <div id="popup-spinner" class="spinner"></div>
+            <p id="popup-message"></p>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>

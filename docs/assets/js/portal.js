@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const panelLinks = {
     wix: "https://manage.wix.com/dashboard",
     webflow: "https://webflow.com/dashboard",
-    wordpress: "https://tusitio.com/wp-admin/user-new.php",
+    wordpress: "https://wordpress.com/log-in/es",
     shopify: "https://admin.shopify.com/settings/users-permissions",
     squarespace: "https://account.squarespace.com",
     otras: "#"

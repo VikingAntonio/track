@@ -66,6 +66,14 @@ document.addEventListener('DOMContentLoaded', () => {
         
         document.querySelectorAll('.plataforma-card').forEach(c => c.classList.remove('active'));
         card.classList.add('active');
+                const panelLinks = {
+    wix: "https://manage.wix.com/dashboard",
+    webflow: "https://webflow.com/dashboard",
+    wordpress: "https://tusitio.com/wp-admin/user-new.php",
+    shopify: "https://admin.shopify.com/settings/users-permissions",
+    squarespace: "https://account.squarespace.com",
+    otras: "#"
+};
 
         const tituloKey = `instr_${plataformaId}_title`;
         const pasos = [];
@@ -84,7 +92,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 </ol>
                 <p>${translations[currentLang]['instructions_email_prompt']}</p>
                 <div class="email-box" title="Copiar al portapapeles">${'francisco.menutech@gmail.com'}</div>
-                <a href="#" target="_blank" class="btn" style="margin-top: 1.5rem;">${translations[currentLang]['instructions_go_to_panel']}</a>
+                <a href="${panelLinks[plataformaId]}" 
+   target="_blank" 
+   class="btn" 
+   style="margin-top: 1.5rem;">
+${translations[currentLang]['instructions_go_to_panel']}</a>
             </div>
         `;
         instruccionesContainer.innerHTML = panelHTML;

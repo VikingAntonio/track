@@ -1,0 +1,321 @@
+<!DOCTYPE html> 
+<html lang="es"> 
+<head> 
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>Generador de Plantillas</title> 
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style> 
+        body { 
+            font-family: 'Poppins', sans-serif;
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        } 
+ 
+        .container { 
+            text-align: center; 
+            background-color: white; 
+            padding: 40px 50px;
+            border-radius: 15px; 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); 
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            max-width: 500px;
+            width: 90%;
+        }
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+        h1 {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+ 
+        #drop-zone { 
+            border: 2px dashed #dce4f0;
+            border-radius: 10px; 
+            padding: 40px 20px;
+            cursor: pointer; 
+            transition: all 0.3s ease;
+            position: relative;
+            background-color: #f8fafc;
+        } 
+        #drop-zone p {
+            margin: 0;
+            color: #888;
+        }
+        #drop-zone::before {
+            content: '📂';
+            font-size: 48px;
+            display: block;
+            margin-bottom: 15px;
+            transition: transform 0.3s ease;
+        }
+ 
+        #drop-zone.drag-over { 
+            border-color: #ff6600;
+            background-color: #fff4e0;
+        } 
+        #drop-zone.drag-over::before {
+            transform: scale(1.1);
+        }
+ 
+        #download-btn { 
+            margin-top: 25px;
+            padding: 12px 30px;
+            background-color: #ff6600;
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            min-width: 180px;
+            min-height: 48px;
+            overflow: hidden;
+        } 
+ 
+        #download-btn:hover { 
+            background-color: #e65c00;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 102, 0, 0.4);
+        } 
+        #download-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(255, 102, 0, 0.3);
+        }
+ 
+        #download-btn.loading { 
+            background-color: #e65c00;
+            cursor: not-allowed; 
+        } 
+ 
+        .spinner { 
+            border: 3px solid rgba(255, 255, 255, 0.3); 
+            border-radius: 50%; 
+            border-top: 3px solid #fff; 
+            width: 24px; 
+            height: 24px; 
+            animation: spin 1s linear infinite; 
+            display: none;
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            margin-top: -12px; 
+            margin-left: -12px; 
+        } 
+ 
+        #download-btn.loading .spinner { 
+            display: block; 
+        } 
+ 
+        #download-btn.loading .btn-text { 
+            visibility: hidden; 
+        } 
+ 
+        @keyframes spin { 
+            0% { transform: rotate(0deg); } 
+            100% { transform: rotate(360deg); } 
+        } 
+ 
+        #preview {
+            border: 1px solid #eee;
+            border-radius: 8px;
+        }
+    </style> 
+</head> 
+<body> 
+    <div class="container"> 
+        <img src="https://menutech.services/assets/img/logomt.png" alt="MenuTech Logo" style="max-width: 150px; margin-bottom: 20px;">
+        <h1>Sube tu Logo</h1> 
+        <div id="drop-zone"> 
+            <p>Arrastra y suelta tu logo aquí, o haz clic para seleccionar un archivo.</p> 
+            <input type="file" id="logo-input" accept="image/*" style="display: none;"> 
+        </div> 
+        <img id="preview" src="#" alt="Vista previa de tu logo" style="display:none; max-width: 200px; margin-top: 20px;"/> 
+        <button id="download-btn" style="display: none;"> 
+            <span class="btn-text">Descargar PDF</span> 
+            <div class="spinner"></div> 
+        </button> 
+    </div> 
+ 
+    <!-- Hidden canvas for image processing --> 
+    <canvas id="image-canvas" style="display: none;"></canvas> 
+ 
+    <!-- Libraries --> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script> 
+        document.addEventListener('DOMContentLoaded', () => { 
+    const { jsPDF } = window.jspdf; 
+ 
+    function showModal(message, icon = 'info') {
+        Swal.fire({
+            title: message,
+            icon: icon,
+            confirmButtonColor: '#ff6600'
+        });
+    }
+ 
+    const dropZone = document.getElementById('drop-zone'); 
+    const logoInput = document.getElementById('logo-input'); 
+    const downloadBtn = document.getElementById('download-btn'); 
+    const preview = document.getElementById('preview'); 
+    const canvas = document.getElementById('image-canvas'); 
+    const ctx = canvas.getContext('2d'); 
+ 
+    let uploadedLogoFile = null; 
+ 
+    // ====================================================================================== 
+    // ⭐⭐ BLOQUE DONDE PUEDES EDITAR FÁCILMENTE TUS COORDENADAS ⭐⭐ 
+    // Coordenadas EXACTAS como Illustrator (origen arriba/izquierda) 
+    // ====================================================================================== 
+    const logoPlacements = [ 
+        { id: "logo1", x: 2062.6, y: 907.7, width: 150, height: 150, angle: -18.57 }, 
+        { id: "logo2", x: 1094.1, y: 1958.1, width: 113, height: 113, angle: 0 }, 
+        { id: "logo3", x: 1401.5, y: 2375.1, width: 107, height: 107, angle: -32.12 }, 
+        { id: "logo4", x: 1103.3, y: 2716.6, width: 190, height: 190, angle: -337.15 }, 
+        { id: "logo5", x: 2369.3, y: 1883.4, width: 80, height: 80, angle: -12.02 }, 
+        { id: "logo6", x: 2801.7, y: 2488.4, width: 85, height: 85, angle: 0 }, 
+        { id: "logo7", x: 3257.0, y: 2494.9, width: 70, height: 75, angle: -347 }, 
+        { id: "logo8", x: 3395.0, y: 2472.9, width: 90, height: 90, angle: -11.72 }, 
+        { id: "logo9", x: 3777.3, y: 2523.0, width: 80, height: 80, angle: -2.07 }, 
+        { id: "logo10", x: 3195.9, y: 965.0, width: 135, height: 135, angle: 0 }, 
+        { id: "logo11", x: 3724.8, y: 1039.8, width: 320, height: 320, angle: 0 }, 
+        { id: "logo12", x: 4800.4, y: -2.0, width: 935, height: 935, angle: 0 } 
+    ]; 
+    // ====================================================================================== 
+ 
+ 
+    function handleFile(file) { 
+        if (!file.type.startsWith('image/')) { 
+            showModal('Por favor, sube un archivo de imagen.'); 
+            return; 
+        } 
+        uploadedLogoFile = file; 
+        const reader = new FileReader(); 
+        reader.onload = (e) => { 
+            preview.src = e.target.result; 
+            preview.style.display = 'block'; 
+            downloadBtn.style.display = 'inline-block'; 
+        }; 
+        reader.readAsDataURL(file); 
+        dropZone.querySelector('p').textContent = `Archivo seleccionado: ${file.name}`; 
+    } 
+ 
+    dropZone.addEventListener('dragover', (e) => { 
+        e.preventDefault(); 
+        dropZone.classList.add('drag-over'); 
+    }); 
+    dropZone.addEventListener('dragleave', () => { 
+        dropZone.classList.remove('drag-over'); 
+    }); 
+    dropZone.addEventListener('drop', (e) => { 
+        e.preventDefault(); 
+        dropZone.classList.remove('drag-over'); 
+        const files = e.dataTransfer.files; 
+        if (files.length > 0) handleFile(files[0]); 
+    }); 
+    dropZone.addEventListener('click', () => logoInput.click()); 
+    logoInput.addEventListener('change', () => { 
+        if (logoInput.files.length > 0) handleFile(logoInput.files[0]); 
+    }); 
+ 
+    function toggleLoading(isLoading) { 
+        if (isLoading) { 
+            downloadBtn.classList.add('loading'); 
+            downloadBtn.disabled = true; 
+            downloadBtn.querySelector('.btn-text').textContent = 'Generando...'; 
+        } else { 
+            downloadBtn.classList.remove('loading'); 
+            downloadBtn.disabled = false; 
+            downloadBtn.querySelector('.btn-text').textContent = 'Descargar PDF'; 
+        } 
+    } 
+ 
+    downloadBtn.addEventListener('click', () => { 
+        if (!uploadedLogoFile) { 
+            showModal('Por favor, sube un logo primero.'); 
+            return; 
+        } 
+ 
+        toggleLoading(true); 
+ 
+        setTimeout(() => { 
+            const baseImage = new Image(); 
+            baseImage.src = './Mesa de trabajo 1.png'; 
+ 
+            baseImage.onload = () => { 
+                canvas.width = baseImage.naturalWidth; 
+                canvas.height = baseImage.naturalHeight; 
+                ctx.clearRect(0, 0, canvas.width, canvas.height); 
+                ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height); 
+ 
+                const userLogo = new Image(); 
+                userLogo.src = URL.createObjectURL(uploadedLogoFile); 
+ 
+                userLogo.onload = () => { 
+                    // --- DIBUJAR LOS LOGOS USANDO TUS COORDENADAS EXACTAS --- 
+                    logoPlacements.forEach(p => { 
+                        const scale = Math.min(p.width / userLogo.width, p.height / userLogo.height); 
+                        const drawWidth = userLogo.width * scale; 
+                        const drawHeight = userLogo.height * scale; 
+ 
+                        const centerX = p.x + p.width / 2; 
+                        const centerY = p.y + p.height / 2; 
+ 
+                        ctx.save(); 
+                        ctx.translate(centerX, centerY); 
+                        ctx.rotate(p.angle * Math.PI / 180); 
+                        ctx.drawImage(userLogo, -drawWidth / 2, -drawHeight / 2, drawWidth, drawHeight); 
+                        ctx.restore(); 
+                    }); 
+ 
+                    generatePdf(); 
+                }; 
+ 
+                userLogo.onerror = () => { 
+                    showModal('Hubo un error al cargar tu logo.'); 
+                    toggleLoading(false); 
+                }; 
+            }; 
+ 
+            baseImage.onerror = () => { 
+                showModal('Hubo un error al cargar la imagen de la plantilla base.'); 
+                toggleLoading(false); 
+            }; 
+ 
+        }, 50); 
+    }); 
+ 
+    function generatePdf() { 
+        try { 
+            const canvasImage = canvas.toDataURL('image/png', 1.0); 
+            const pdf = new jsPDF({ 
+                orientation: 'landscape', 
+                unit: 'px', 
+                format: [canvas.width, canvas.height] 
+            }); 
+ 
+            pdf.addImage(canvasImage, 'PNG', 0, 0, canvas.width, canvas.height); 
+            pdf.save('Brand book for Menutech.pdf'); 
+ 
+        } catch (error) { 
+            console.error(error); 
+            showModal(`Ocurrió un error: ${error.name} - ${error.message}`); 
+        } finally { 
+            toggleLoading(false); 
+        } 
+    } 
+}); 
+ 
+    </script> 
+</body> 
+</html> 

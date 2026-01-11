@@ -417,7 +417,7 @@ generate.onclick = ()=>{
   const id = crypto.randomUUID().split('-')[0];
 
   // URL del QR que se escaneará
-  const qrUrl = `https://tight-lab-9e0f.francisco-menutech.workers.dev/?id=${encodeURIComponent(id)}`;
+  const qrUrl = `https://qr.menutech.biz/?id=${encodeURIComponent(id)}`;
 
   // Generar QR real
   realQR = new QRCodeStyling({
@@ -462,5 +462,6 @@ download.onclick = () => {
 <script src="https://menutech.xyz/menutechUI.min.js"></script>
 </body>
 </html>
+
 
 

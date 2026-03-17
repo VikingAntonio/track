@@ -3,12 +3,128 @@
 <head>
   <meta charset="UTF-8">
   <title>Menutech Framework</title>
+  <script src="https://menutech.xyz/menutechUI.min.js"></script>
   <style>
     body {
       font-family: system-ui, sans-serif;
       background: #f7f7f7;
       margin: 0;
       padding: 2em;
+    }
+
+    /* Sidebar styles */
+    #sidebar {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      width: 250px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      z-index: 10000;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      max-height: 80vh;
+      border: 1px solid #ddd;
+    }
+
+    #sidebar.collapsed {
+      transform: translateX(-270px);
+    }
+
+    #sidebar-header {
+      padding: 12px 15px;
+      background: linear-gradient(135deg, #00bcd4, #0097a7);
+      color: white;
+      border-radius: 11px 11px 0 0;
+      cursor: move;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: bold;
+      user-select: none;
+    }
+
+    #sidebar-toggle {
+      position: absolute;
+      right: -45px;
+      top: 10px;
+      width: 40px;
+      height: 40px;
+      background: #00bcd4;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 22px;
+      transition: background 0.2s;
+    }
+
+    #sidebar-toggle:hover {
+      background: #0097a7;
+    }
+
+    #sidebar-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      overflow-y: auto;
+      flex: 1;
+      background: #fff;
+      border-radius: 0 0 12px 12px;
+    }
+
+    #sidebar-list li {
+      padding: 12px 15px;
+      border-bottom: 1px solid #f0f0f0;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85em;
+      color: #333;
+      display: flex;
+      align-items: center;
+    }
+
+    #sidebar-list li:before {
+      content: '•';
+      color: #00bcd4;
+      margin-right: 8px;
+      font-weight: bold;
+    }
+
+    #sidebar-list li:hover {
+      background: #e0f7fa;
+      color: #0097a7;
+      padding-left: 20px;
+    }
+
+    #sidebar-list li:last-child {
+      border-bottom: none;
+    }
+
+    /* Preview containment & Library overrides */
+    .preview {
+      transform: translate(0,0); /* Contains fixed elements from library */
+      isolation: isolate;
+    }
+
+    .preview menutech-gradient,
+    .preview menutech-particles,
+    .preview menutech-navidad,
+    .preview menutech-halloween,
+    .preview menutech-navbar {
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      z-index: 0 !important;
     }
 
     h1 {
@@ -278,6 +394,14 @@ h2 {
   </style>
 </head>
 <body>
+  <div id="sidebar">
+    <div id="sidebar-header">
+      <span>Components</span>
+      <button id="sidebar-toggle">☰</button>
+    </div>
+    <ul id="sidebar-list"></ul>
+  </div>
+
   <h1>Framework Menutech</h1>
 
   <div class="search">
@@ -445,242 +569,7 @@ card.querySelectorAll("[data-attr]").forEach(input => {
   });
 });
 
-// ======= COMPONENTE FUNCIONAL =======
-class MenutechNavidad extends HTMLElement {
-  static get observedAttributes() {
-    return [
-      "color","cantidad","tamano","velocidad","opacidad",
-      "popup-activo","popup-image","popup-link","popup-color",
-      "fecha-inicio","fecha-fin", "santa-tamano","santa-velocidad"
-    ];
-  }
-
-  constructor() {
-    super();
-    this.attachShadow({ mode: "open" });
-    this.render();
-  }
-
-  attributeChangedCallback() {
-    this.render();
-  }
-
-  render() {
-    const color = this.getAttribute("color") || "#ffffff";
-    const cantidad = parseInt(this.getAttribute("cantidad")) || 60;
-    const tamano = parseFloat(this.getAttribute("tamano")) || 3;
-    const velocidad = parseFloat(this.getAttribute("velocidad")) || 1;
-    const opacidad = parseFloat(this.getAttribute("opacidad")) || 0.8;
-    const popupActivo = this.getAttribute("popup-activo") === "true";
-    const popupImage = this.getAttribute("popup-image") || "";
-    const popupLink = this.getAttribute("popup-link") || "";
-    const popupColor = this.getAttribute("popup-color") || "#d32f2f";
-    const currentYear = new Date().getFullYear();
-const fechaInicio = this.getAttribute("fecha-inicio") || `${currentYear}-12-25`;
-const fechaFin = this.getAttribute("fecha-fin") || `${currentYear}-12-25`;
-    const santaTamano = parseFloat(this.getAttribute("santa-tamano")) || 450;
-const santaVelocidad = parseFloat(this.getAttribute("santa-velocidad")) || 3;
-
-    const hoy = new Date();
-    const enEditor = this.closest('.preview') !== null;
-
-    const inicio = new Date(fechaInicio);
-    const fin = new Date(fechaFin);
-  const navidad = new Date(currentYear, 11, 25);
-const fechasPorDefecto = (
-  fechaInicio.endsWith("-12-25") &&
-  fechaFin.endsWith("-12-25")
-);
-
-
-    let activo = false;
-    if (enEditor) {
-      activo = true;
-    } else if (fechasPorDefecto) {
-      activo = hoy.toDateString() === navidad.toDateString();
-    } else {
-      activo = hoy >= inicio && hoy <= fin;
-    }
-
-    // Copos de nieve SOLO en vista previa
-    let dots = "";
-    if (activo && enEditor) {
-      const snowImages = [
-        "https://menutechdeveloper.github.io/libreria/snow1.png",
-        "https://menutechdeveloper.github.io/libreria/snow2.png",
-        "https://menutechdeveloper.github.io/libreria/snow3.png"
-      ];
-      for (let i = 0; i < cantidad; i++) {
-        const x = Math.random() * 100;
-        const y = Math.random() * 100;
-        const size = tamano + Math.random() * tamano;
-        const dur = 4 + Math.random() * 3;
-        const delay = Math.random() * 2;
-        const img = snowImages[i % snowImages.length];
-        dots += `
-          <div class="flake" style="
-            left:${x}%;
-            top:${y}%;
-            width:${size*2}px;
-            height:${size*2}px;
-            animation-duration:${dur / velocidad}s;
-            animation-delay:${delay}s;
-            opacity:${opacidad};
-            background-image:url('${img}');
-            background-size:contain;
-            background-repeat:no-repeat;
-            background-position:center;
-          "></div>`;
-      }
-    }
-
-    this.shadowRoot.innerHTML = `
-      <style>
-        :host {
-          position:relative;
-          display:block;
-          width:100%;
-          height:100%;
-          overflow:hidden;
-          pointer-events:none;
-          z-index:1;
-          background:linear-gradient(180deg,#001b33,#002b44);
-        }
-        .flake {
-          position:absolute;
-          animation:fall linear infinite;
-          will-change: transform, opacity;
-        }
-        @keyframes fall {
-          0% { transform:translateY(0) rotate(0deg); opacity:1; }
-          100% { transform:translateY(100%) rotate(360deg); opacity:0; }
-        }
-
-        /* POPUP */
-        .popup-overlay {
-          position:fixed;
-          top:0; left:0;
-          width:100%; height:100%;
-          background:rgba(0,0,0,0.5);
-          display:${popupActivo && activo ? "flex" : "none"};
-          justify-content:center;
-          align-items:center;
-          pointer-events:auto;
-          z-index:10000;
-        }
-        .popup-content {
-          position:relative;
-          background:#fff;
-          max-width:90%;
-          max-height:80%;
-          border-radius:12px;
-          box-shadow:0 4px 20px rgba(0,0,0,0.3);
-          padding:20px;
-          text-align:center;
-          display:flex;
-          flex-direction:column;
-          gap:12px;
-          overflow:hidden;
-        }
-        .popup-content img {
-          max-width:100%;
-          max-height:60vh;
-          border-radius:8px;
-          object-fit:contain;
-        }
-        .popup-content button {
-          background:${popupColor};
-          color:#fff;
-          border:none;
-          padding:10px 16px;
-          border-radius:6px;
-          cursor:pointer;
-          font-size:1rem;
-        }
-        .popup-close {
-          position:absolute;
-          top:10px; right:10px;
-          background:transparent;
-          border:none;
-          font-size:1.5rem;
-          cursor:pointer;
-          color:#333;
-        }
-      </style>
-
-      ${dots}
-
-      <div class="popup-overlay">
-        <div class="popup-content">
-          <button class="popup-close">&times;</button>
-          ${popupImage ? `<img src="${popupImage}" alt="Promoción">` : ""}
-          ${popupLink ? `<button onclick="window.open('${popupLink}','_blank')">Ver promoción</button>` : ""}
-        </div>
-      </div>
-    `;
-
-    const overlay = this.shadowRoot.querySelector(".popup-overlay");
-    const closeBtn = this.shadowRoot.querySelector(".popup-close");
-    if (overlay && closeBtn) {
-      closeBtn.onclick = () => overlay.style.display = "none";
-      overlay.onclick = (e) => { if(e.target === overlay) overlay.style.display = "none"; };
-    }
-
-    // ===== Santa solo visible en la vista previa =====
-   if (enEditor) {
-  const preview = this.closest('.preview');
-  let santa = preview.querySelector('#santa');
-
-  // Crear si no existe
-  if (!santa) {
-    santa = document.createElement('img');
-    santa.id = 'santa';
-    santa.src = 'https://menutechdeveloper.github.io/libreria/santa.gif';
-    santa.alt = 'Santa volando';
-    preview.appendChild(santa);
-  }
-
-  // Actualizar tamaño SIEMPRE
-  santa.style.width = santaTamano + 'px';
-
-  // Si ya había animación previa, detenerla
-  if (santa._animFrame) cancelAnimationFrame(santa._animFrame);
-
-  let posX = -200;
-  let posY = preview.offsetHeight / 2;
-  let dirX = 1;
-  let dirY = (Math.random() < 0.5 ? 1 : -1);
-  let velocidad = santaVelocidad;
-
-  function moverSanta() {
-    if (!santa) return;
-
-    posX += dirX * velocidad;
-    posY += dirY * 0.5;
-
-    if (posY < 50 || posY > santa.parentElement.offsetHeight - 150) dirY *= -1;
-    if (posX > santa.parentElement.offsetWidth) {
-      dirX = -1;
-      santa.style.transform = "translateY(-50%) scaleX(-1)";
-    }
-    if (posX < -200) {
-      dirX = 1;
-      santa.style.transform = "translateY(-50%) scaleX(1)";
-    }
-
-    santa.style.left = `${posX}px`;
-    santa.style.top = `${posY}px`;
-
-    santa._animFrame = requestAnimationFrame(moverSanta);
-  }
-
-  moverSanta();
-}
-
-  }
-}
-
-customElements.define("menutech-navidad", MenutechNavidad);
+// (Local MenutechNavidad removed)
 </script>
 
 
@@ -812,312 +701,7 @@ cardHW.querySelectorAll("[data-attr]").forEach(input => {
   });
 });
 
-// ======= COMPONENTE FUNCIONAL =======
-class MenutechHalloween extends HTMLElement {
-  static get observedAttributes() {
-    return [
-      "color-hw","cantidad-hw","tamano-hw","velocidad-hw","opacidad-hw",
-      "popup-activo-hw","popup-image-hw","popup-link-hw","popup-color-hw",
-      "fecha-inicio-hw","fecha-fin-hw", "tamano-pumpkin-hw", "tamano-bat-hw", 
-      "velocidad-bat-hw"
-
-    ];
-  }
-
-  constructor() {
-    super();
-    this.attachShadow({ mode: "open" });
-    this.renderHW();
-  }
-
-  attributeChangedCallback() {
-    this.renderHW();
-  }
-
-  renderHW() {
-    const color = this.getAttribute("color-hw") || "#ff6600";
-    const cantidad = parseInt(this.getAttribute("cantidad-hw")) || 60;
-    const tamano = parseFloat(this.getAttribute("tamano-hw")) || 3;
-    const velocidad = parseFloat(this.getAttribute("velocidad-hw")) || 1;
-    const opacidad = parseFloat(this.getAttribute("opacidad-hw")) || 0.8;
-    const popupActivo = this.getAttribute("popup-activo-hw") === "true";
-    const popupImage = this.getAttribute("popup-image-hw") || "";
-    const popupLink = this.getAttribute("popup-link-hw") || "";
-    const popupColor = this.getAttribute("popup-color-hw") || "#ff6600";
-    const fechaInicio = this.getAttribute("fecha-inicio-hw") || "2025-10-31";
-    const fechaFin = this.getAttribute("fecha-fin-hw") || "2025-10-31";
-    const tamanoPumpkin = parseFloat(this.getAttribute("tamano-pumpkin-hw")) || 60;
-    const tamanoBat = parseFloat(this.getAttribute("tamano-bat-hw")) || 50;
-    const velocidadBat = parseFloat(this.getAttribute("velocidad-bat-hw")) || 1;
-
-
-    const hoy = new Date();
-    const enEditor = this.closest('.preview') !== null;
-
-    const inicio = new Date(fechaInicio);
-    const fin = new Date(fechaFin);
-    const halloween = new Date(hoy.getFullYear(), 9, 31);
-    const fechasPorDefecto =
-      fechaInicio === "2025-10-31" && fechaFin === "2025-10-31";
-
-    let activo = false;
-    if (enEditor) {
-      activo = true;
-    } else if (fechasPorDefecto) {
-      activo = hoy.toDateString() === halloween.toDateString();
-    } else {
-      activo = hoy >= inicio && hoy <= fin;
-    }
-
-    // Partículas
-    let dots = "";
-    if (activo && enEditor) {
-      const particleImages = [
-        "https://menutechdeveloper.github.io/libreria/hw1.png",
-        "https://menutechdeveloper.github.io/libreria/hw2.png",
-        "https://menutechdeveloper.github.io/libreria/hw3.png"
-      ];
-      for (let i = 0; i < cantidad; i++) {
-        const x = Math.random() * 100;
-        const y = Math.random() * 100;
-        const size = tamano + Math.random() * tamano;
-        const dur = 4 + Math.random() * 3;
-        const delay = Math.random() * 2;
-        const img = particleImages[i % particleImages.length];
-        dots += `
-          <div class="flake" style="
-            left:${x}%;
-            top:${y}%;
-            width:${size*2}px;
-            height:${size*2}px;
-            animation-duration:${dur / velocidad}s;
-            animation-delay:${delay}s;
-            opacity:${opacidad};
-            background-image:url('${img}');
-            background-size:contain;
-            background-repeat:no-repeat;
-            background-position:center;
-          "></div>`;
-      }
-    }
-
-    this.shadowRoot.innerHTML = `
-      <style>
-        :host {
-          position:relative;
-          display:block;
-          width:100%;
-          height:100%;
-          overflow:hidden;
-          pointer-events:none;
-          z-index:1;
-          background:white;
-        }
-
-        /* HUMO DE FONDO */
-        .smoke-layer {
-          position:absolute;
-          top:0; left:0;
-          width:100%; height:100%;
-          background-image:url("https://menutechdeveloper.github.io/libreria/smoke2.png");
-          background-repeat:repeat;
-          background-size:cover;
-          opacity:0.5;
-          animation:moveSmoke 40s linear infinite;
-          filter:blur(4px);
-          z-index:0;
-        }
-        @keyframes moveSmoke {
-          0% { background-position:0 0; }
-          100% { background-position:2000px 1000px; }
-        }
-
-        .flake {
-          position:absolute;
-          animation:fall linear infinite;
-          will-change: transform, opacity;
-        }
-        @keyframes fall {
-          0% { transform:translateY(0) rotate(0deg); opacity:1; }
-          100% { transform:translateY(100%) rotate(360deg); opacity:0; }
-        }
-
-        /* CALABAZAS ILUMINADAS */
-        .pumpkin-layer {
-          position:absolute;
-          inset:0;
-          pointer-events:none;
-          overflow:hidden;
-          z-index:2;
-        }
-        .pumpkin {
-          position:absolute;
-          width:60px;
-          height:60px;
-          background-image:url("https://menutechdeveloper.github.io/libreria/calabaza.gif");
-          background-size:contain;
-          background-repeat:no-repeat;
-          opacity:0;
-          transform:scale(0.5);
-          filter:drop-shadow(0 0 15px #ff6600);
-          animation:appear 2s ease-out forwards;
-        }
-        @keyframes appear {
-          0% { opacity:0; transform:scale(0.3) rotate(-10deg); }
-          40% { opacity:1; transform:scale(1.1) rotate(5deg); }
-          100% { opacity:1; transform:scale(1) rotate(0deg); }
-        }
-        .pumpkin.fade-out {
-          animation:disappear 2s ease-in forwards;
-        }
-        @keyframes disappear {
-          0% { opacity:1; transform:scale(1); }
-          100% { opacity:0; transform:scale(0.3); }
-        }
-
-        /* POPUP */
-        .popup-overlay {
-          position:fixed;
-          top:0; left:0;
-          width:100%; height:100%;
-          background:rgba(0,0,0,0.5);
-          display:${popupActivo && activo ? "flex" : "none"};
-          justify-content:center;
-          align-items:center;
-          pointer-events:auto;
-          z-index:10000;
-        }
-        .popup-content {
-          position:relative;
-          background:#fff;
-          max-width:90%;
-          max-height:80%;
-          border-radius:12px;
-          box-shadow:0 4px 20px rgba(0,0,0,0.3);
-          padding:20px;
-          text-align:center;
-          display:flex;
-          flex-direction:column;
-          gap:12px;
-          overflow:hidden;
-        }
-        .popup-content img {
-          max-width:100%;
-          max-height:60vh;
-          border-radius:8px;
-          object-fit:contain;
-        }
-        .popup-content button {
-          background:${popupColor};
-          color:#fff;
-          border:none;
-          padding:10px 16px;
-          border-radius:6px;
-          cursor:pointer;
-          font-size:1rem;
-        }
-        .popup-close {
-          position:absolute;
-          top:10px; right:10px;
-          background:transparent;
-          border:none;
-          font-size:1.5rem;
-          cursor:pointer;
-          color:#333;
-        }
-          /* MURCIÉLAGOS */
-        .bat-layer {
-          position:absolute;
-          inset:0;
-          pointer-events:none;
-          overflow:hidden;
-          z-index:3;
-        }
-        .bat {
-          position:absolute;
-          background-image:url("https://menutechdeveloper.github.io/libreria/murcielago.gif");
-          background-size:contain;
-          background-repeat:no-repeat;
-          background-position:center;
-          animation:flyBat linear infinite;
-        }
-        @keyframes flyBat {
-          0% { left:-100px; }
-          100% { left:100vw; }
-        }
-
-      </style>
-
-      ${activo ? `<div class="smoke-layer"></div>` : ""}
-      ${dots}
-      ${activo ? `<div class="pumpkin-layer"></div>` : ""}
-      ${activo ? `<div class="bat-layer"></div>` : ""}
-
-      <div class="popup-overlay">
-        <div class="popup-content">
-          <button class="popup-close">&times;</button>
-          ${popupImage ? `<img src="${popupImage}" alt="Promoción">` : ""}
-          ${popupLink ? `<button onclick="window.open('${popupLink}','_blank')">Ver promoción</button>` : ""}
-        </div>
-      </div>
-    `;
-
-    // Lógica popup
-    const overlay = this.shadowRoot.querySelector(".popup-overlay");
-    const closeBtn = this.shadowRoot.querySelector(".popup-close");
-    if (overlay && closeBtn) {
-      closeBtn.onclick = () => overlay.style.display = "none";
-      overlay.onclick = (e) => { if(e.target === overlay) overlay.style.display = "none"; };
-    }
-
-    // === CALABAZAS ALEATORIAS ===
-    if (activo) {
-      const layer = this.shadowRoot.querySelector(".pumpkin-layer");
-      if (layer) {
-        const spawnPumpkin = () => {
-          const pumpkin = document.createElement("div");
-          pumpkin.classList.add("pumpkin");
-          pumpkin.style.left = `${Math.random() * 100}%`;
-          pumpkin.style.top = `${Math.random() * 100}%`;
-
-          pumpkin.style.width = `${tamanoPumpkin}px`;
-          pumpkin.style.height = `${tamanoPumpkin}px`;
-
-          layer.appendChild(pumpkin);
-          setTimeout(() => {
-            pumpkin.classList.add("fade-out");
-            setTimeout(() => pumpkin.remove(), 2000);
-          }, 3000 + Math.random() * 3000);
-        };
-        clearInterval(this._pumpkinInterval);
-        this._pumpkinInterval = setInterval(() => {
-          if (Math.random() > 0.4) spawnPumpkin();
-        }, 1200);
-      }
-    }
-  }
-  // === MURCIÉLAGOS ALEATORIOS ===
-if (activo) {
-  const batLayer = this.shadowRoot.querySelector(".bat-layer");
-  if (batLayer) {
-    batLayer.innerHTML = "";
-    const batCount = 6;
-    for (let i = 0; i < batCount; i++) {
-      const bat = document.createElement("div");
-      bat.classList.add("bat");
-      bat.style.top = `${Math.random() * 80}%`;
-      bat.style.width = `${tamanoBat}px`;
-      bat.style.height = `${tamanoBat}px`;
-      const duration = (15 + Math.random() * 5) / velocidadBat;
-      bat.style.animationDuration = `${duration}s`;
-      bat.style.animationDelay = `${Math.random() * 5}s`;
-      batLayer.appendChild(bat);
-    }
-  }
-}
-}
-
-customElements.define("menutech-halloween", MenutechHalloween);
+// (Local MenutechHalloween removed)
 </script>
 <script>
 // === Actualizar año de Halloween automáticamente ===
@@ -1130,7 +714,7 @@ customElements.define("menutech-halloween", MenutechHalloween);
 
   const inputInicio = document.querySelector('[data-attr="fecha-inicio-hw"]');
   const inputFin = document.querySelector('[data-attr="fecha-fin-hw"]');
-  
+
   if (inputInicio && !inputInicio.value)
     inputInicio.value = `${targetYear}-10-31`;
   if (inputFin && !inputFin.value)
@@ -1231,7 +815,7 @@ customElements.define("menutech-halloween", MenutechHalloween);
   }
 
   function updatePreview() {
-    const urls = [...fieldsContainer.querySelectorAll("input[type='url']")]
+    const urls = Array.from(fieldsContainer.querySelectorAll("input[type='url']"))
       .map(inp => inp.value.trim())
       .filter(v => v !== "");
 
@@ -1253,7 +837,7 @@ customElements.define("menutech-halloween", MenutechHalloween);
   });
 
   copyBtn.addEventListener("click", () => {
-    const urls = [...fieldsContainer.querySelectorAll("input[type='url']")]
+    const urls = Array.from(fieldsContainer.querySelectorAll("input[type='url']"))
       .map(inp => inp.value.trim())
       .filter(v => v !== "");
     const width = card.querySelector('[data-attr="flip-width"]').value;
@@ -1275,33 +859,7 @@ customElements.define("menutech-halloween", MenutechHalloween);
 </script>
 
 <script>
-class MenutechMenu extends HTMLElement {
-  static get observedAttributes() { return ["imagenes", "flip-width", "flip-height"]; }
-
-  connectedCallback() { this.render(); }
-
-  attributeChangedCallback() { this.render(); }
-
-  render() {
-    const urls = (this.getAttribute("imagenes") || "").split(",").filter(u => u.trim() !== "");
-    const width = this.getAttribute("flip-width") || 150;
-    const height = this.getAttribute("flip-height") || 150;
-
-    // Limpiar contenido
-    this.innerHTML = "";
-    this.classList.add("menutech-menu-container");
-
-    urls.forEach(url => {
-      const div = document.createElement("div");
-      div.className = "flip-item";
-      div.style.width = `${width}px`;
-      div.style.height = `${height}px`;
-      div.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;">`;
-      this.appendChild(div);
-    });
-  }
-}
-customElements.define("menutech-menu", MenutechMenu);
+// (Local MenutechMenu removed)
 </script>
 
 
@@ -1314,19 +872,21 @@ customElements.define("menutech-menu", MenutechMenu);
     <div class="component-card" data-name="menutech-particles" data-type="visual">
       <div class="tag">&lt;menutech-particles&gt;</div>
       <div class="preview">
-        <menutech-particles color="#00bcd4" cantidad="40" tamano="4" velocidad="1" opacidad="0.6"></menutech-particles>
+        <menutech-particles color="#00bcd4" count="40" min-size="1" max-size="4" speed="1" opacity="0.6"></menutech-particles>
       </div>
       <div class="props">
         <label>Color</label>
         <input type="color" data-attr="color" value="#00bcd4">
         <label>Cantidad</label>
-        <input type="number" data-attr="cantidad" value="40">
-        <label>Tamaño</label>
-        <input type="number" data-attr="tamano" value="4">
+        <input type="number" data-attr="count" value="40">
+        <label>Tamaño Mínimo</label>
+        <input type="number" data-attr="min-size" value="1">
+        <label>Tamaño Máximo</label>
+        <input type="number" data-attr="max-size" value="4">
         <label>Velocidad</label>
-        <input type="number" step="0.1" data-attr="velocidad" value="1">
+        <input type="number" step="0.1" data-attr="speed" value="1">
         <label>Opacidad</label>
-        <input type="number" step="0.1" data-attr="opacidad" value="0.6">
+        <input type="number" step="0.1" data-attr="opacity" value="0.6">
       </div>
       <button class="copy-btn">Copiar código</button>
       <small>Partículas flotantes.</small>
@@ -1455,7 +1015,7 @@ customElements.define("menutech-menu", MenutechMenu);
     <input type="text" data-attr="subtitle" placeholder="Texto secundario">
 
     <label>Código de botones / script</label>
-    <textarea data-attr="buttons" placeholder="Pega aquí los spans o script" rows="4" style="resize:vertical;"></textarea>
+    <textarea data-attr="custom-code" placeholder="Pega aquí los spans o script" rows="4" style="resize:vertical;"></textarea>
   </div>
 
   <button class="copy-btn">Copiar código</button>
@@ -1463,134 +1023,7 @@ customElements.define("menutech-menu", MenutechMenu);
 </div>
 
 <script>
-class MenutechHero extends HTMLElement {
-  constructor() {
-    super();
-    this.shadow = this.attachShadow({ mode: "open" });
-    this.render();
-  }
-
-  static get observedAttributes() {
-    return [
-      "background",
-      "overlay-color",
-      "overlay-opacity",
-      "title",
-      "subtitle",
-      "buttons"
-    ];
-  }
-
-  attributeChangedCallback() {
-    this.render();
-  }
-
-  render() {
-    const background = this.getAttribute("background") || "https://picsum.photos/1200/600";
-    const overlayColor = this.getAttribute("overlay-color") || "#000000";
-    const overlayOpacity = parseFloat(this.getAttribute("overlay-opacity")) || 0.7;
-    const title = this.getAttribute("title") || "Impulsa tu negocio al siguiente nivel";
-    const subtitle = this.getAttribute("subtitle") || "Descubre cómo nuestra plataforma puede ayudarte a crecer, conectar con más clientes y aumentar tus ventas.";
-    const buttons = this.getAttribute("buttons") || `
-      <span class="glf-button" data-glf-cuid="af65ce46-dd1a-4bc2-8461-df278b715ca2" data-glf-ruid="4a27439a-e98e-441e-a2db-477113814476" id="glfButton0">See MENU & Order</span>
-      <span class="glf-reservation" data-glf-cuid="c6f6fcc9-ebb9-4575-b513-3f3d9ea55da0" data-glf-ruid="1e45b55d-4e3a-4866-a22b-30601bde9f8a" data-glf-reservation="true" id="glfButton1">Table Reservation</span>
-    `;
-
-    // ✅ Si es video, lo ponemos como fondo de video
-    const isVideo = /\.(mp4|webm|ogg)(\?.*)?$/i.test(background);
-
-    this.shadow.innerHTML = `
-      <style>
-        :host {
-          display: block;
-          width: 100%;
-          height: 100%;
-          position: relative;
-          overflow: hidden;
-        }
-
-        section.hero {
-          position: relative;
-          width: 100%;
-          height: 100%;
-          min-height: 300px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: white;
-          text-align: center;
-          border-radius: 12px;
-          overflow: hidden;
-          ${!isVideo ? `background: url('${background}') center/cover no-repeat;` : ''}
-        }
-
-        /* overlay encima del fondo */
-        .hero-overlay {
-          position: absolute;
-          inset: 0;
-          background: ${overlayColor};
-          opacity: ${overlayOpacity};
-          z-index: 0;
-        }
-
-        /* fondo de video */
-        video.hero-bg {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          z-index: -1;
-        }
-
-        .hero-content {
-          position: relative;
-          z-index: 1;
-          max-width: 700px;
-          padding: 20px;
-          animation: fadeInUp 1s ease-out;
-        }
-
-        .hero h1 {
-          font-size: 2rem;
-          font-weight: 700;
-          margin-bottom: 1rem;
-        }
-
-        .hero p {
-          font-size: 1rem;
-          margin-bottom: 1.5rem;
-          opacity: 0.9;
-        }
-
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
-        @media (max-width: 600px) {
-          .hero h1 { font-size: 1.5rem; }
-          .hero p { font-size: 0.9rem; }
-        }
-      </style>
-
-      <section class="hero">
-        ${isVideo ? `<video class="hero-bg" src="${background}" autoplay muted loop playsinline></video>` : ''}
-        <div class="hero-overlay"></div>
-        <div class="hero-content">
-          <h1>${title}</h1>
-          <p>${subtitle}</p>
-          <div class="hero-buttons"></div>
-        </div>
-      </section>
-    `;
-
-    const btnContainer = this.shadow.querySelector(".hero-buttons");
-    if (btnContainer) btnContainer.innerHTML = buttons;
-  }
-}
-customElements.define("menutech-hero", MenutechHero);
+// (Local MenutechHero removed)
 </script>
 
 <!-- END MENUTECH HERO CARD -->
@@ -1707,7 +1140,7 @@ customElements.define("menutech-hero", MenutechHero);
 
   <!-- Columna de vista previa (iframe) -->
   <div style="flex:1; max-width:75%; display:flex; flex-direction:column; gap:10px;">
-    
+
     <!-- Botones de plantillas sobre el iframe -->
     <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
       <button class="tab-btn" data-tab="1">Plantilla 1</button>
@@ -1934,8 +1367,8 @@ for (const [key, selector] of Object.entries(codeAreas)) {
 }
 /*PARA LOS DEMAS CUSTOM CODES DE MENUTECHUI FIN*/
 
-  } catch(e){ 
-    console.warn('No se pudo actualizar la vista previa del iframe'); 
+  } catch(e){
+    console.warn('No se pudo actualizar la vista previa del iframe');
   }
 }
 
@@ -1994,83 +1427,7 @@ tplCopyBtn.addEventListener('click', () => {
     // menutech-hero
 
     // menutech-navbar
-    class MenutechNavbar extends HTMLElement {
-  constructor() {
-    super();
-    this.shadow = this.attachShadow({mode:"open"});
-    this.render();
-  }
-
-  static get observedAttributes() {
-    return ["color","text-color","hover-color",
-            "link1","link2","link3","link4","link5",
-            "text1","text2","text3","text4","text5"];
-  }
-
-  attributeChangedCallback() { this.render(); }
-
-  render() {
-    const color = this.getAttribute("color") || "#e0e0e0";
-    const textColor = this.getAttribute("text-color") || "#444";
-    const hoverColor = this.getAttribute("hover-color") || "#00bcd4";
-
-    const links = [
-      this.getAttribute("link1") || "#",
-      this.getAttribute("link2") || "#",
-      this.getAttribute("link3") || "#",
-      this.getAttribute("link4") || "#",
-      this.getAttribute("link5") || "#"
-    ];
-
-    const texts = [
-      this.getAttribute("text1") || "Home",
-      this.getAttribute("text2") || "Services",
-      this.getAttribute("text3") || "Gallery",
-      this.getAttribute("text4") || "Contact",
-      this.getAttribute("text5") || ""
-    ];
-
-    const previewLinks = texts.map((t,i)=>t ? `<a href="${links[i]}">${t}</a>` : "").filter(a=>a!=="");
-
-    this.shadow.innerHTML = `
-      <style>
-        :host { display:block; width:100%; height:100%; }
-        nav {
-          display:flex;
-          justify-content: space-between;
-          align-items:center;
-          background: ${color};
-          padding:14px 20px;
-          border-radius:35px;
-          box-shadow: 8px 8px 16px rgba(0,0,0,0.15), -8px -8px 16px rgba(255,255,255,0.9);
-          backdrop-filter: blur(10px);
-          width: 100%;
-          height: 100%;
-          box-sizing: border-box;
-        }
-        a {
-          flex:1;
-          text-align:center;
-          text-decoration:none;
-          color:${textColor};
-          font-size:0.9rem;
-          font-weight:500;
-          padding:10px 0;
-          border-radius:18px;
-          background: rgba(255,255,255,0.1);
-          box-shadow: inset 2px 2px 4px rgba(255,255,255,0.6), inset -2px -2px 4px rgba(190,190,190,0.5);
-          transition: all 0.25s ease;
-          margin:0 4px;
-        }
-        a:hover {
-          box-shadow: inset 4px 4px 8px ${hoverColor}, inset -4px -4px 8px ${hoverColor};
-        }
-      </style>
-      <nav>${previewLinks.join("")}</nav>
-    `;
-  }
-}
-customElements.define("menutech-navbar", MenutechNavbar);
+    // (Local MenutechNavbar removed)
 
 // Interactividad tarjeta
 const navbarCard = document.querySelector('[data-name="menutech-navbar"]');
@@ -2103,8 +1460,8 @@ if(navbarCard){
         "text1","text2","text3","text4","text5"
       ].includes(a.name) && a.value.trim() !== "");
 
-    const code = attrs.length 
-      ? `<menutech-navbar ${attrs.map(a=>`${a.name}="${a.value}"`).join(" ")}></menutech-navbar>` 
+    const code = attrs.length
+      ? `<menutech-navbar ${attrs.map(a=>`${a.name}="${a.value}"`).join(" ")}></menutech-navbar>`
       : `<menutech-navbar></menutech-navbar>`;
 
     navigator.clipboard.writeText(code);
@@ -2114,221 +1471,7 @@ if(navbarCard){
 }
   // end menutech-navbar
 
-    class MenutechForm extends HTMLElement {
-      static get observedAttributes() { return ["bg-color","label-color","input-color","placeholder-color","button-color","button-text-color","max-width"]; }
-      constructor() { super(); this.attachShadow({mode:"open"}); this.render(); }
-      attributeChangedCallback() { this.render(); }
-      render() {
-        const bg = this.getAttribute("bg-color") || "#fff";
-        const label = this.getAttribute("label-color") || "#000";
-        const inputC = this.getAttribute("input-color") || "#000";
-        const placeholder = this.getAttribute("placeholder-color") || "#555";
-        const btnBg = this.getAttribute("button-color") || "#ff6600";
-        const btnText = this.getAttribute("button-text-color") || "#fff";
-        const maxW = this.getAttribute("max-width") || "400px";
-
-        this.shadowRoot.innerHTML = `
-          <style>
-            :host { display:block; width:100%; height:100%; }
-            form {
-              background:${bg};
-              padding:1em;
-              border-radius:10px;
-              max-width:${maxW};
-              margin:auto;
-              display:flex;
-              flex-direction:column;
-              gap:0.8em;
-            }
-            label { color:${label}; font-weight:600; }
-            input { color:${inputC}; border:1px solid #ccc; border-radius:6px; padding:5px; }
-            input::placeholder { color:${placeholder}; }
-            button {
-              background:${btnBg};
-              color:${btnText};
-              border:none;
-              padding:6px 10px;
-              border-radius:6px;
-              cursor:pointer;
-            }
-          </style>
-          <form>
-            <label>Nombre</label>
-            <input type="text" placeholder="Escribe tu nombre">
-            <label>Email</label>
-            <input type="email" placeholder="Escribe tu email">
-            <button>Enviar</button>
-          </form>
-        `;
-      }
-    }
-    customElements.define("menutech-form", MenutechForm);
-
-    class MenutechParticles extends HTMLElement {
-      static get observedAttributes() { return ["color","cantidad","tamano","velocidad","opacidad"]; }
-      constructor() { super(); this.attachShadow({mode:"open"}); this.render(); }
-      attributeChangedCallback() { this.render(); }
-
-      render() {
-        const color = this.getAttribute("color") || "#00bcd4";
-        const cantidad = parseInt(this.getAttribute("cantidad")) || 30;
-        const tamano = parseFloat(this.getAttribute("tamano")) || 4;
-        const velocidad = parseFloat(this.getAttribute("velocidad")) || 1;
-        const opacidad = parseFloat(this.getAttribute("opacidad")) || 0.6;
-
-        let dots = "";
-        for(let i=0;i<cantidad;i++){
-          const x = Math.random()*100;
-          const y = Math.random()*100;
-          const size = tamano + Math.random()*tamano;
-          const dur = 4 + Math.random()*3;
-          const delay = Math.random()*2;
-          dots += `<div class="dot" style="left:${x}%; top:${y}%; width:${size}px; height:${size}px; animation-duration:${dur/velocidad}s; animation-delay:${delay}s;"></div>`;
-        }
-
-        this.shadowRoot.innerHTML=`
-          <style>
-            :host {
-              display:block;
-              position:relative;
-              width:100%;
-              height:100%;
-              overflow:hidden;
-            }
-            .dot {
-              position:absolute;
-              background:${color};
-              border-radius:50%;
-              opacity:${opacidad};
-              animation:float ease-in-out infinite;
-            }
-            @keyframes float {
-              0%,100% { transform:translateY(0); }
-              50% { transform:translateY(-15px); }
-            }
-          </style>
-          ${dots}
-        `;
-      }
-    }
-    customElements.define("menutech-particles", MenutechParticles);
-
-    class MenutechGradient extends HTMLElement {
-      static get observedAttributes() { return ["color1","color2","color3","color4","color5","speed","angle","overlay-opacity","blur"]; }
-      constructor() { super(); this.attachShadow({mode:"open"}); this.render(); }
-      attributeChangedCallback() { this.render(); }
-      render() {
-        const colors = [
-          this.getAttribute("color1") || "#ff0000",
-          this.getAttribute("color2") || "#ff8800",
-          this.getAttribute("color3") || "#ffee00",
-          this.getAttribute("color4") || "#00ccff",
-          this.getAttribute("color5") || "#0066ff"
-        ];
-        const speed = this.getAttribute("speed") || "100s";
-        const angle = this.getAttribute("angle") || "60deg";
-        const overlay = this.getAttribute("overlay-opacity") || "0.5";
-        const blur = this.getAttribute("blur") || "5px";
-
-        this.shadowRoot.innerHTML=`
-          <style>
-            :host {
-              display:block;
-              width:100%;
-              height:100%;
-              border-radius:10px;
-              overflow:hidden;
-              position:relative;
-            }
-            .grad{
-              width:100%;
-              height:100%;
-              background: linear-gradient(${angle}, ${colors.join(",")});
-              background-size: 400% 400%;
-              animation: gradAnim ${speed} ease infinite;
-              filter: blur(${blur});
-              transition: background 0.5s ease;
-            }
-            .overlay{
-              position:absolute;
-              top:0;left:0;width:100%;height:100%;
-              background:rgba(0,0,0,${overlay});
-            }
-            @keyframes gradAnim{
-              0%{background-position:0% 50%;}
-              50%{background-position:100% 50%;}
-              100%{background-position:0% 50%;}
-            }
-          </style>
-          <div class="grad"></div>
-          <div class="overlay"></div>
-        `;
-      }
-    }
-    customElements.define("menutech-gradient", MenutechGradient);
-
-    class MenutechCarrusel extends HTMLElement {
-      static get observedAttributes() { return ["images","slide-width","slide-height"]; }
-      constructor() { super(); this.attachShadow({mode:"open"}); this.render(); }
-      attributeChangedCallback() { this.render(); }
-
-      render() {
-        const defaultImgs = [
-          "https://placehold.co/600x400",
-          "https://placehold.co/600x400/FF0000/FFF",
-          "https://placehold.co/600x400/00FF00/000"
-        ];
-        const raw = this.getAttribute("images");
-        const imgs = raw ? raw.split(",").map(s => s.trim()).filter(Boolean) : defaultImgs.slice();
-        const width = this.getAttribute("slide-width") || "280px";
-        const height = this.getAttribute("slide-height") || "380px";
-
-        this.shadowRoot.innerHTML = `
-          <style>
-            :host {
-              display:block;
-              width:100%;
-              height:100%;
-              border-radius:10px;
-              overflow:hidden;
-              position:relative;
-              box-sizing:border-box;
-              padding:8px;
-            }
-            .carousel {
-              display:flex;
-              gap:10px;
-              align-items:center;
-              height:100%;
-              overflow-x:auto;
-              scroll-behavior:smooth;
-            }
-            .carousel::-webkit-scrollbar{ display:none; }
-            .carousel img {
-              width:${width};
-              height:${height};
-              object-fit:cover;
-              border-radius:10px;
-              flex-shrink:0;
-              cursor:pointer;
-              transition:transform .3s ease;
-            }
-            .carousel img:hover { transform:scale(1.05); }
-          </style>
-          <div class="carousel">
-            ${imgs.map(i => `<img src="${i}" loading="lazy" data-src="${i}">`).join("")}
-          </div>
-        `;
-
-        const imgsEls = Array.from(this.shadowRoot.querySelectorAll("img"));
-        imgsEls.forEach(imgEl => {
-          imgEl.addEventListener("click", () => {
-            window.open(imgEl.getAttribute("data-src"), "_blank");
-          });
-        });
-      }
-    }
-    customElements.define("menutech-carrusel", MenutechCarrusel);
+    // (Local UI components removed)
 
     /* === INTERACTIVIDAD === */
     document.querySelectorAll(".component-card").forEach(card => {
@@ -2346,6 +1489,24 @@ if(navbarCard){
               .filter(v => v);
             if (urls.length) preview.setAttribute("images", urls.join(","));
             else preview.removeAttribute("images");
+            return;
+          }
+          // Special handling for gradient colors
+          if (card.dataset.name === 'menutech-gradient' && name.startsWith('color')) {
+            const colorInputs = Array.from(card.querySelectorAll('input[data-attr^="color"]'));
+            const colors = colorInputs.map(ci => ci.value).join(',');
+            preview.setAttribute('colors', colors);
+            return;
+          }
+          // Special handling for hero custom-code
+          if (card.dataset.name === 'menutech-hero' && name === 'custom-code') {
+            let tpl = preview.querySelector('template.custom-code');
+            if (!tpl) {
+              tpl = document.createElement('template');
+              tpl.className = 'custom-code';
+              preview.appendChild(tpl);
+            }
+            tpl.innerHTML = e.target.value;
             return;
           }
           preview.setAttribute(name, e.target.value);
@@ -2392,11 +1553,78 @@ if(navbarCard){
         card.style.display = name.includes(q) ? "" : "none";
       });
     });
+
+    /* === SIDEBAR LOGIC === */
+    const sidebar = document.getElementById('sidebar');
+    const sidebarList = document.getElementById('sidebar-list');
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const sidebarHeader = document.getElementById('sidebar-header');
+
+    console.log('Sidebar elements:', {sidebar, sidebarList, sidebarToggle, sidebarHeader});
+
+    // Populate sidebar
+    function populateSidebar() {
+      const listEl = document.getElementById('sidebar-list');
+      if (!listEl) return;
+      listEl.innerHTML = '';
+      const cards = document.querySelectorAll('.component-card');
+      cards.forEach(card => {
+        const name = card.dataset.name;
+        const li = document.createElement('li');
+        li.textContent = `<${name}>`;
+        li.dataset.target = name;
+        listEl.appendChild(li);
+      });
+    }
+    // Ensure population
+    if (document.readyState === 'complete') {
+      populateSidebar();
+    } else {
+      window.addEventListener('load', populateSidebar);
+    }
+
+    // Smooth scroll to component
+    sidebarList.addEventListener('click', e => {
+      const li = e.target.closest('li');
+      if (!li) return;
+      const targetName = li.dataset.target;
+      const targetCard = document.querySelector(`.component-card[data-name="${targetName}"]`);
+      if (targetCard) {
+        targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Highlight effect
+        targetCard.style.outline = "4px solid #00bcd4";
+        setTimeout(() => targetCard.style.outline = "none", 2000);
+      }
+    });
+
+    // Draggable logic
+    let isDragging = false;
+    let offsetX, offsetY;
+
+    sidebarHeader.addEventListener('mousedown', (e) => {
+      if (e.target.id === 'sidebar-toggle') return;
+      isDragging = true;
+      offsetX = e.clientX - sidebar.getBoundingClientRect().left;
+      offsetY = e.clientY - sidebar.getBoundingClientRect().top;
+      sidebar.style.transition = 'none';
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      sidebar.style.left = (e.clientX - offsetX) + 'px';
+      sidebar.style.top = (e.clientY - offsetY) + 'px';
+    });
+
+    document.addEventListener('mouseup', () => {
+      isDragging = false;
+      sidebar.style.transition = 'transform 0.3s ease';
+    });
+
+    // Toggle sidebar
+    sidebarToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+      sidebarToggle.textContent = sidebar.classList.contains('collapsed') ? '❯' : '☰';
+    });
   </script>
 </body>
 </html>
-
-
-
-
-
